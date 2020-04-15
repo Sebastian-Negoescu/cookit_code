@@ -32,7 +32,7 @@ If ($eligibleBranch.Contains($branch)) {
     $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateUri -branch $branch
 
     If (!($testCommand.Code)) {
-        Write-Host "Looks like there were no syntax errors. Let's deploy the template now!" -ForegroundColor DarkYellow
+        Write-Host "Looks like there were no template validation errors. Let's deploy the template now!" -ForegroundColor DarkYellow
         New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateUri -branch $branch
         Write-Host "Deployment finished!" -ForegroundColor DarkYellow
     } Else {
