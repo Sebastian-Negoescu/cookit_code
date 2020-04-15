@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <title>Cook IT - Home</title>
+</head>
+<body>
+    <h3>Welcome to CookIT!</h3>
+    <p>This will be a sample web app for different recipes.</p>
+    <p style="font-style:italic">Page under construction, stay tunned...!</p>
+
+    <ol>
+        {% for recipe in recipes %}
+        <li>
+            <a href="{% url 'recipe_detail' recipe.id %}" style="font-weight:bold">
+                {{ recipe.title }}
+            </a>
+        </li>
+        {% endfor %}
+    </ol>
+</body>
