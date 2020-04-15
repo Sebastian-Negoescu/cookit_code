@@ -11,7 +11,11 @@
             "defaultValue": "[resourceGroup().location]"
         },
         "branch": {
-            "type": "string"
+            "type": "string",
+            "allowedValues": [
+                "master",
+                "dev"
+            ]
         }
     },
     "variables": {
@@ -21,6 +25,32 @@
         "webappFile": "webapp.json",
         "slotFile": "slot.json"
     },
-    "resources": [],
-    "outputs": {}
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_ASP",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('aspFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "aspLinked": {
+            "type": "string",
+            "value": "[reference('Linked_ASP').outputs.aspId.value]"
+        }
+    }
 }
