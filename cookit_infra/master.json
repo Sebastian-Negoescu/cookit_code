@@ -1,8 +1,26 @@
 {
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": "cookit"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]"
+        },
+        "branch": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "repoUrl": "https://raw.githubusercontent.com/Sebastian-Negoescu/cookit_code/",
+        "baseUrl": "[concat(variables('repoUrl'), parameters('branch'), '/cookit_infra/')]",
+        "aspFile": "asp.json",
+        "webappFile": "webapp.json",
+        "slotFile": "slot.json"
+    },
     "resources": [],
     "outputs": {}
 }
