@@ -24,7 +24,8 @@
             "properties": {
                 "name": "[variables('webappName')]",
                 "siteConfig": {
-                    "linuxFxVersion": "PYTHON|3.8"
+                    "linuxFxVersion": "PYTHON|3.8",
+                    "alwaysOn": true
                 },
                 "clientAffinityEnabled": false,
                 "serverFarmId": "[parameters('aspRef')]"
