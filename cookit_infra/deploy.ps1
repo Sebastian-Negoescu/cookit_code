@@ -32,9 +32,15 @@ If ($eligibleBranch.Contains($branch)) {
     $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateUri -branch $branch
 
     If (!($testCommand.Code)) {
-        Write-Host "Looks like there were no template validation errors. Let's deploy the template now!" -ForegroundColor DarkYellow
-        New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateUri -branch $branch
-        Write-Host "Deployment finished!" -ForegroundColor DarkYellow
+        $approval = (Read-Host "Looks like there were no template validation errors. Should we deploy? (Yes/No)").ToLower()
+        If (($approval -eq 'yes') -or ($approval -eq 'y')) {
+            Write-Host "Let's deploy the template now!" -ForegroundColor DarkYellow
+            New-AzResourceGroupDeployment -ResourceGroupName $rgName -TemplateUri $templateUri -branch $branch
+            Write-Host "Deployment finished!" -ForegroundColor DarkYellow
+        }
+        Else {
+            Write-Host "Cool. See you next time!"
+        }
     } Else {
         Write-Host "Oopsie - there were some template validation errors. Check them below:" -ForegroundColor DarkYellow
         Write-Host "Deployment Error Code: " $testCommand.Code -ForegroundColor DarkYellow

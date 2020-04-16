@@ -45,12 +45,46 @@
                     }
                 }
             }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_WebApp",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('webappFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "aspRef": {
+                        "value": "[reference('Linked_ASP').outputs.aspId.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "Linked_ASP"
+            ]
         }
     ],
     "outputs": {
         "aspLinked": {
             "type": "string",
             "value": "[reference('Linked_ASP').outputs.aspId.value]"
+        },
+        "webappLinked": {
+            "type": "string",
+            "value": "[reference('Linked_WebApp').outputs.webappId.value]"
+        },
+        "webappLinkedDefaultHostName": {
+            "type": "string",
+            "value": "[reference('Linked_WebApp').outputs.webappDefaultHostName.value]"
         }
     }
 }
