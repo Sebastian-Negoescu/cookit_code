@@ -38,7 +38,7 @@
         },
         "webappDefaultHostName": {
             "type": "string",
-            "value": "[reference('Microsoft.Web/sites', variables('webappName')).DefaultHostName]"
+            "value": "[reference(resourceId('Microsoft.Web/sites', variables('webappName'))).DefaultHostName]"
         }
     }
 }
