@@ -1,8 +1,131 @@
 {
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {},
-    "variables": {},
-    "resources": [],
-    "outputs": {}
+    "parameters": {
+        "prefix": {
+            "type": "string",
+            "defaultValue": "cookit"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]"
+        },
+        "branch": {
+            "type": "string",
+            "allowedValues": [
+                "master",
+                "dev"
+            ]
+        }
+    },
+    "variables": {
+        "repoUrl": "https://raw.githubusercontent.com/Sebastian-Negoescu/cookit_code/",
+        "baseUrl": "[concat(variables('repoUrl'), parameters('branch'), '/cookit_infra/')]",
+        "aspFile": "asp.json",
+        "webappFile": "webapp.json",
+        "slotFile": "slot.json"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_ASP",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('aspFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_WebApp",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('webappFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "aspRef": {
+                        "value": "[reference('Linked_ASP').outputs.aspId.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "Linked_ASP"
+            ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_Slot",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('slotFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "webappName": {
+                        "value": "[reference('Linked_WebApp').outputs.webappName.value]"
+                    },
+                    "branch": {
+                        "value": "[parameters('branch')]"
+                    },
+                    "aspRef": {
+                        "value": "[reference('Linked_ASP').outputs.aspId.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "Linked_WebApp"
+            ]
+        }
+    ],
+    "outputs": {
+        "aspLinked": {
+            "type": "string",
+            "value": "[reference('Linked_ASP').outputs.aspId.value]"
+        },
+        "webappLinked": {
+            "type": "string",
+            "value": "[reference('Linked_WebApp').outputs.webappId.value]"
+        },
+        "webappLinkedDefaultHostName": {
+            "type": "string",
+            "value": "[reference('Linked_WebApp').outputs.webappDefaultHostName.value]"
+        },
+        "webappNameLinked": {
+            "type": "string",
+            "value": "[reference('Linked_WebApp').outpus.webappName.value]"
+        },
+        "slotLinked": {
+            "type": "string",
+            "value": "[reference('Linked_Slot').outputs.slotId.value]"
+        },
+        "slotLinkedHostName": {
+            "type": "string",
+            "value": "[reference('Linked_Slot').outputs.slotHostName.value]"
+        }
+    }
 }
