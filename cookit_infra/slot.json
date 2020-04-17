@@ -42,7 +42,7 @@
         },
         "slotHostName": {
             "type": "string",
-            "value": "[concat(variables('slotFullName'), '.azurewebsites.net')]"
+            "value": "[concat(parameters('webappName'), '-', parameters('branch'), '.azurewebsites.net')]"
         }
     }
 }
