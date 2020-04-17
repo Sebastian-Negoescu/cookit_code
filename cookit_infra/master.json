@@ -117,7 +117,7 @@
         },
         "webappNameLinked": {
             "type": "string",
-            "value": "[reference('Linked_WebApp').outpus.webappName.value]"
+            "value": "[reference('Linked_WebApp').outputs.webappName.value]"
         },
         "slotLinked": {
             "type": "string",
