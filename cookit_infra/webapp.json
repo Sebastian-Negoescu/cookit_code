@@ -21,6 +21,7 @@
             "apiVersion": "2019-08-01",
             "name": "[variables('webappName')]",
             "location": "[parameters('location')]",
+            "kind": "app",
             "properties": {
                 "name": "[variables('webappName')]",
                 "siteConfig": {
@@ -36,6 +37,10 @@
         "webappId": {
             "type": "string",
             "value": "[resourceId('Microsoft.Web/sites', variables('webappName'))]"
+        },
+        "webappName": {
+            "type": "string",
+            "value": "[reference(variables('webappName'))]"
         },
         "webappDefaultHostName": {
             "type": "string",

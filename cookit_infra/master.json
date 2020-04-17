@@ -71,6 +71,35 @@
             "dependsOn": [
                 "Linked_ASP"
             ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_Slot",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('slotFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "webappName": {
+                        "value": "[reference('Linked_WebApp').outputs.webappName.value]"
+                    },
+                    "branch": {
+                        "value": "[parameters('branch')]"
+                    },
+                    "aspRef": {
+                        "value": "[reference('Linked_ASP').outputs.aspId.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "Linked_WebApp"
+            ]
         }
     ],
     "outputs": {
@@ -85,6 +114,18 @@
         "webappLinkedDefaultHostName": {
             "type": "string",
             "value": "[reference('Linked_WebApp').outputs.webappDefaultHostName.value]"
+        },
+        "webappNameLinked": {
+            "type": "string",
+            "value": "[reference('Linked_WebApp').outpus.webappName.value]"
+        },
+        "slotLinked": {
+            "type": "string",
+            "value": "[reference('Linked_Slot').outputs.slotId.value]"
+        },
+        "slotLinkedHostName": {
+            "type": "string",
+            "value": "[reference('Linked_Slot').outputs.slotHostName.value]"
         }
     }
 }
