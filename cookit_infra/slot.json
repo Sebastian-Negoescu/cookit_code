@@ -38,7 +38,7 @@
     "outputs": {
         "slotId": {
             "type": "string",
-            "value": "[resourceId('Microsoft.Web/sites/slots', variables('slotFullName'))]"
+            "value": "[resourceId('Microsoft.Web/sites/slots', parameters('webappName'), parameters('branch'))]"
         },
         "slotHostName": {
             "type": "string",
