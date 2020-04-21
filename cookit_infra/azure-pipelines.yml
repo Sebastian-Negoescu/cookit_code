@@ -33,3 +33,10 @@ stages:
           inputs:
             targetType: inline
             script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
+      - job: "Check_FileTree"
+        displayName: "Check the structure of the repo"
+        steps:
+        - task: Bash@3
+          inputs:
+            targetType: inline
+            script: "pwd && ls -la"
