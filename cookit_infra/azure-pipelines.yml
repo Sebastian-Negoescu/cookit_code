@@ -1,0 +1,35 @@
+trigger:
+- dev
+
+variables:
+  subscription: "http://AzDevOps"
+  branch: "dev"
+
+stages:
+  - stage: "Test Agent connectivity"
+    pool: "Default"
+    displayName: "Testing Agent Connectivity"
+    jobs:
+      - job: "Clean_Workspace"
+        workspace:
+          clean: all
+      - job: "EchoAgent_DummyText"
+        displayName: "Echo Agent - Dummy Text"
+        steps:
+        - bash: |
+            which bash
+            echo "Agent Name & ID: $AGENT_NAME : $AGENT_ID."
+            echo "Current working directory: $SYSTEM_DEFAULTWORKINGDIRECTORY"
+            echo "Current Build Sources directory: $BUILD_SOURCESDIRECTORY"
+          displayName: "Ping"
+          continueOnError: true
+      - job: "Assert_Connectivity"
+        dependsOn: "EchoAgent_DummyText"
+        condition: succeeded()
+        displayName: "Assert Connectivity with the Agent"
+        steps:
+        - task: Bash@3
+          displayName: "Assert 'PING'"
+          inputs:
+            targetType: inline
+            script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
