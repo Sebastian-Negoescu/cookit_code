@@ -6,7 +6,7 @@ variables:
   branch: "dev"
 
 stages:
-  - stage: "Test Agent connectivity"
+  - stage: "Test_Agent_connectivity"
     pool: "Default"
     displayName: "Testing Agent Connectivity"
     jobs:
