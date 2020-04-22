@@ -23,5 +23,5 @@ from myrecipe import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r"^$", views.home, name="home"),
-    url(r"^myrecipe/(\d+)/", views.recipe_detail, name="recipe_detail"),
+    url(r'myrecipe/(\d+)/', views.recipe_detail, name="recipe_detail"),
 ]
