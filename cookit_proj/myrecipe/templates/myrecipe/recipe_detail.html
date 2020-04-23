@@ -1,8 +1,14 @@
-<!DOCTYPE html>
-<head>
-    <title>Cook IT - Detailed View</title>
-</head>
-<body>
-    <h3>{{ recipe.name }}</h3>
-    <p style="font-style: italic">{{ recipe.description }}</p>
-</body>
+{% extends "base.html" %}
+{% block title %}{{ block.super }} - {{ recipe.title }}{% endblock %}
+{% block content %}
+<h3>{{ recipe.title }} <span style="font-style: italic; font-weight: lighter; font-size:small">by {{ recipe.author|upper }}</span></h3> 
+<p style="font-style: italic;">
+    <span style="font-weight: lighter;">{{ recipe.category.name }} - </span>
+    {{ recipe.number_of_portions}}
+</p>
+<p>{{ recipe.time_for_preparation }}</p>
+<h4>Ingredients</h4>
+{{ recipe.ingredients|linebreaks }}
+<h4>Preparation</h4>
+{{ recipe.preparation|linebreaks }}
+{% endblock %}
