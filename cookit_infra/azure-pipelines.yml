@@ -34,6 +34,8 @@ stages:
             targetType: inline
             script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
       - job: "Check_FileTree"
+        dependsOn: "Assert_Connectivity"
+        condition: succeeded()
         displayName: "Check the structure of the repo"
         steps:
         - task: Bash@3
