@@ -59,9 +59,25 @@ stages:
           inputs:
             targetType: inline
             script: |
-              $masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
-              Write-Host "Found Master File at: $($masterFile)."
-              $masterContent = Get-Content $masterFile | ConvertFrom-JSON
-              $prefix = $masterContent.parameters.prefix.defaultValue
-              $rgName = $prefix + "_rg"
+              $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
+              Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
+              $env:masterContent = Get-Content $($env:masterFile) | ConvertFrom-JSON
+              $env:prefix = $($env:masterContent.parameters.prefix.defaultValue)
+              Write-Host "Prefix set as: $($env:prefix)." -ForegroundColor DarkYellow
+              $env:rgName = $($env:prefix) + "_rg"
+              Write-Host "RG Name set as: $($env:rgName)." -ForegroundColor DarkYellow
+              Write-Host "Converting the variables to Azure DevOps ENV VARs."  -ForegroundColor DarkBlue
+              Write-Host "##vso[task.setvariable variable=vsoPrefix;]$($env:prefix)"
+              Write-Host "##vso[task.setvariable variable=vsoRgName;]$($env:rgName)"
+        - task: AzurePowerShell@5
+          name: "Check_ENVVARs"
+          displayName: "Check ENV VARs"
+          inputs:
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: "InlineScript"
+            Inline: |
+              gci env:*
+
+
         
