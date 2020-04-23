@@ -61,7 +61,9 @@ stages:
             script: |
               $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
               Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
-              $env:masterContent = Get-Content $($env:masterFile) | ConvertFrom-JSON
+              $env:masterContent = Get-Content -Path $($env:masterFile).ToString() | ConvertFrom-JSON
+              Write-Host "Content of the Master File..."
+              $($env:masterContent)
               $env:prefix = $($env:masterContent.parameters.prefix.defaultValue)
               Write-Host "Prefix set as: $($env:prefix)." -ForegroundColor DarkYellow
               $env:rgName = $($env:prefix) + "_rg"
