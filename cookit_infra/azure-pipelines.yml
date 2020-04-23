@@ -61,7 +61,9 @@ stages:
             script: |
               $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
               Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
-              $env:masterContent = Get-Content -Path $($env:masterFile).ToString() | ConvertFrom-JSON
+              Write-Host "Initial Read of the file:" -ForegroundColor DarkBlue
+              Get-Content -Path ($env:masterFile)
+              $env:masterContent = Get-Content -Path $($env:masterFile) | ConvertFrom-JSON
               Write-Host "Content of the Master File..."
               $($env:masterContent)
               $env:prefix = $($env:masterContent.parameters.prefix.defaultValue)
