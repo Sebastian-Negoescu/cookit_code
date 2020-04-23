@@ -53,12 +53,14 @@ stages:
       - job: "Create_RG"
         displayName: "Create Resource Group"
         steps:
-        - task: PowerShell@2
+        - task: AzurePowerShell@5
           name: "Set_Facts"
           displayName: "Set Facts - register Vars"
           inputs:
-            targetType: inline
-            script: |
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: InlineScript
+            Inline: |
               $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
               Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
               Write-Host "Initial Read of the file:" -ForegroundColor DarkBlue # TO DELETE
