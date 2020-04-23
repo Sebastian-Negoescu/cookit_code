@@ -38,7 +38,8 @@ stages:
         condition: succeeded()
         displayName: "Check the structure of the repo"
         steps:
-        - task: Bash@3
+        - task: PowerShell@2
+          displayName: "Filetree listing"
           inputs:
             targetType: inline
-            script: "pwd && ls -la"
+            script: "Get-Location && Get-ChildItem -Recurse"
