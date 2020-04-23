@@ -43,3 +43,25 @@ stages:
           inputs:
             targetType: inline
             script: "Get-Location && Get-ChildItem -Recurse"
+
+  - stage: "Create_Infrastructure"
+    dependsOn: "Test_Agent_Connectivity"
+    condition: succeeded()
+    pool: "Default"
+    displayName: "Create Azure Infrastructure"
+    jobs:
+      - job: "Create_RG"
+        displayName: "Create Resource Group"
+        steps:
+        - task: PowerShell@2
+          name: "Set_Facts"
+          displayName: "Set Facts - register Vars"
+          inputs:
+            targetType: inline
+            script: |
+              $masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
+              Write-Host "Found Master File at: $($masterFile)."
+              $masterContent = Get-Content $masterFile | ConvertFrom-JSON
+              $prefix = $masterContent.parameters.prefix.defaultValue
+              $rgName = $prefix + "_rg"
+        
