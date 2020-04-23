@@ -65,7 +65,7 @@ stages:
               Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
               Write-Host "Initial Read of the file:" -ForegroundColor DarkBlue # TO DELETE
               Get-Content -Path $($env:masterFile) # TO DELETE
-              $env:masterContent = (Get-Content -Path $env:masterFile | Out-String | ConvertFrom-JSON)
+              $env:masterContent = (Get-Content -Path $($env:masterFile) -Raw | ConvertFrom-JSON)
               Write-Host "Content of the Master File..."
               $($env:masterContent)
               $env:prefix = $($env:masterContent.parameters.prefix.defaultValue)
