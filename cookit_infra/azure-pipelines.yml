@@ -4,6 +4,7 @@ trigger:
 variables:
   subscription: "http://AzDevOps"
   branch: "dev"
+  location: "West Europe"
 
 stages:
   # - stage: "Test_Agent_connectivity"
@@ -93,6 +94,20 @@ stages:
         ###################### CONTINUE TOMORROW WITH THE CREATION OF THE RESOURCES AND APP ##########################
         ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING #########################
         ##############################################################################################################
-
-
-        
+        - task: AzurePowerShell@5
+          name: "Check_RG"
+          displayName: "Check if Resource Group exists"
+          inputs:
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: "InlineScript"
+            Inline: |
+              Write-Host "Check if Resource Group $(VSORGNAME) exists..."
+              Get-AzResourceGroup -Name $(VSORGNAME) -ErrorAction SilentlyContinue
+              If ($?) {
+                Write-Host "Resource Group $(VSORGNAME) already exists. Continue the deployment."
+              } Else {
+                Write-Host "Resource Group $(VSORGNAME) does NOT exist. Let's create it first..."
+                New-AzResourceGroup -Name $(VSORGNAME) -Location $(location)
+                Write-Host "Resource Group created. Let's continue the deployment..."
+              }
