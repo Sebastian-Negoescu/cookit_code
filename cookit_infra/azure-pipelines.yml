@@ -7,43 +7,43 @@ variables:
   location: "West Europe"
 
 stages:
-  # - stage: "Test_Agent_connectivity"
-  #   pool: "Default"
-  #   displayName: "Testing Agent Connectivity"
-  #   jobs:
-  #     - job: "Clean_Workspace"
-  #       workspace:
-  #         clean: all
-  #     - job: "EchoAgent_DummyText"
-  #       displayName: "Echo Agent - Dummy Text"
-  #       steps:
-  #       - bash: |
-  #           which bash
-  #           echo "Agent Name & ID: $AGENT_NAME : $AGENT_ID."
-  #           echo "Current working directory: $SYSTEM_DEFAULTWORKINGDIRECTORY"
-  #           echo "Current Build Sources directory: $BUILD_SOURCESDIRECTORY"
-  #         displayName: "Ping"
-  #         continueOnError: true
-  #     - job: "Assert_Connectivity"
-  #       dependsOn: "EchoAgent_DummyText"
-  #       condition: succeeded()
-  #       displayName: "Assert Connectivity with the Agent"
-  #       steps:
-  #       - task: Bash@3
-  #         displayName: "Assert 'PING'"
-  #         inputs:
-  #           targetType: inline
-  #           script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
-  #     - job: "Check_FileTree"
-  #       dependsOn: "Assert_Connectivity"
-  #       condition: succeeded()
-  #       displayName: "Check the structure of the repo"
-  #       steps:
-  #       - task: PowerShell@2
-  #         displayName: "Filetree listing"
-  #         inputs:
-  #           targetType: inline
-  #           script: "Get-Location && Get-ChildItem -Recurse"
+  - stage: "Test_Agent_connectivity"
+    pool: "Default"
+    displayName: "Testing Agent Connectivity"
+    jobs:
+      - job: "Clean_Workspace"
+        workspace:
+          clean: all
+      - job: "EchoAgent_DummyText"
+        displayName: "Echo Agent - Dummy Text"
+        steps:
+        - bash: |
+            which bash
+            echo "Agent Name & ID: $AGENT_NAME : $AGENT_ID."
+            echo "Current working directory: $SYSTEM_DEFAULTWORKINGDIRECTORY"
+            echo "Current Build Sources directory: $BUILD_SOURCESDIRECTORY"
+          displayName: "Ping"
+          continueOnError: true
+      - job: "Assert_Connectivity"
+        dependsOn: "EchoAgent_DummyText"
+        condition: succeeded()
+        displayName: "Assert Connectivity with the Agent"
+        steps:
+        - task: Bash@3
+          displayName: "Assert 'PING'"
+          inputs:
+            targetType: inline
+            script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
+      - job: "Check_FileTree"
+        dependsOn: "Assert_Connectivity"
+        condition: succeeded()
+        displayName: "Check the structure of the repo"
+        steps:
+        - task: PowerShell@2
+          displayName: "Filetree listing"
+          inputs:
+            targetType: inline
+            script: "Get-Location && Get-ChildItem -Recurse"
 
         #######################################################################################################################
         ###################### FIRST CREATE A STAGE FOR BUILDING THE DJANGO APPLICATION BEFORE INFRA ##########################
@@ -52,8 +52,8 @@ stages:
         #######################################################################################################################
 
   - stage: "Create_Infrastructure"
-    # dependsOn: "Test_Agent_Connectivity"
-    # condition: succeeded()
+    dependsOn: "Test_Agent_Connectivity"
+    condition: succeeded()
     pool: "Default"
     displayName: "Create Azure Infrastructure"
     jobs:
@@ -119,6 +119,7 @@ stages:
                 New-AzResourceGroup -Name $(Set_Facts.vsoRgName) -Location "$(location)"
                 Write-Host "Resource Group created. Let's continue the deployment..."
               }
+              
       - job: "Create_Resources"
         displayName: "Deploy Azure Resource Manager Template"
         dependsOn: "Create_RG"
