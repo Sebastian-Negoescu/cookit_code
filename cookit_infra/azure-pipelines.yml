@@ -45,6 +45,12 @@ stages:
   #           targetType: inline
   #           script: "Get-Location && Get-ChildItem -Recurse"
 
+        #######################################################################################################################
+        ###################### FIRST CREATE A STAGE FOR BUILDING THE DJANGO APPLICATION BEFORE INFRA ##########################
+        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ##################################
+        ###################### TEST AS WELL PARALLED JOBS FOR DJANGO BUILD && INFRA DEPLOYMENT ???? ###########################
+        #######################################################################################################################
+
   - stage: "Create_Infrastructure"
     # dependsOn: "Test_Agent_Connectivity"
     # condition: succeeded()
@@ -141,7 +147,7 @@ stages:
                   $env:testStatus = "Okay"
                   Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
                 }
-                #Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE these lines if OKAY. :)"
+                Write-Host "To be used in further Job:Tasks as TEST_ARMTEMPLATES_VSOTESTSTATUS"
           - task: AzurePowerShell@5
             name: "Check_Status"
             displayName: "List New_EnvVars"
@@ -150,4 +156,26 @@ stages:
               azurePowerShellVersion: "LatestVersion"
               ScriptType: "InlineScript"
               Inline: |
-                Get-ChildItem env:* #should be named VSOTESTSTATUS
+                Get-ChildItem env:* #should be named TEST_ARMTEMPLATES_VSOTESTSTATUS
+          - task: AzureResourceGroupDeployment@2
+            name: "Deploy_Resources"
+            displayName: "Deploy Azure Resource Group Template"
+            inputs:
+              azureSubscription: $(subscription)
+              action: "Create Or Update REsource Group"
+              resourceGroupName: $(myVsoRgName)
+              templateLocation: "URL of the file"
+              csmFileLink: $(myVsoTemplateUri)
+              overrideParameters:
+                -branch "$(branch)"
+              deploymentMode: "Incremental"
+
+        ###########################################################################################################################
+        ###################### CONTINUE AFTER LUNCH WITH THE CREATION OF THE RESOURCES && DEPLOY TO SLOT ##########################
+        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
+        ###########################################################################################################################
+
+        ###########################################################################################################################
+        ###################### DEPLOY TO SLOT SLOT PART && MAYBE TO MMASTER APP - JUST CHECK POSIBILITIES #########################
+        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
+        ###########################################################################################################################
