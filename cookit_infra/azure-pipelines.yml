@@ -102,13 +102,13 @@ stages:
             azurePowerShellVersion: "LatestVersion"
             ScriptType: "InlineScript"
             Inline: |
-              Write-Host "Check if Resource Group $(VSORGNAME) exists..."
-              Get-AzResourceGroup -Name $(VSORGNAME) -ErrorAction SilentlyContinue
+              Write-Host "Check if Resource Group $(Set_Facts.vsoRgName) exists..."
+              Get-AzResourceGroup -Name $(Set_Facts.vsoRgName) -ErrorAction SilentlyContinue
               If ($?) {
-                Write-Host "Resource Group $(VSORGNAME) already exists. Continue the deployment."
+                Write-Host "Resource Group $(Set_Facts.vsoRgName) already exists. Continue the deployment."
               } Else {
-                Write-Host "Resource Group $(VSORGNAME) does NOT exist. Let's create it first..."
-                New-AzResourceGroup -Name $(VSORGNAME) -Location "$(location)"
+                Write-Host "Resource Group $(Set_Facts.vsoRgName) does NOT exist. Let's create it first..."
+                New-AzResourceGroup -Name $(Set_Facts.vsoRgName) -Location "$(location)"
                 Write-Host "Resource Group created. Let's continue the deployment..."
               }
       - job: "Create_Resources"
