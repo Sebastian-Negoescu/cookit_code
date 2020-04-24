@@ -136,9 +136,18 @@ stages:
                   Write-Host "Error Code: $($testCommand.Code)"
                   Write-Host "Error Message: $($testCommand.Message)"
                   $env:testStatus = "Failed"
+                  Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
                 } Else {
                   $env:testStatus = "Okay"
+                  Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
                 }
-                Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
-                Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE these lines if OKAY. :)"
-                Get-ChildItem env:* #should be named TEST_ARMTEMPLATES_VSOTESTSTATUS
+                #Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE these lines if OKAY. :)"
+          - task: AzurePowerShell@5
+            name: "Check_Status"
+            displayName: "List New_EnvVars"
+            inputs:
+              azureSubscription: $(subscription)
+              azurePowerShellVersion: "LatestVersion"
+              ScriptType: "InlineScript"
+              Inline: |
+                Get-ChildItem env:* #should be named VSOTESTSTATUS
