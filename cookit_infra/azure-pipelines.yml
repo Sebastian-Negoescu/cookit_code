@@ -136,6 +136,8 @@ stages:
                   Write-Host "Error Code: $($testCommand.Code)"
                   Write-Host "Error Message: $($testCommand.Message)"
                   $env:testStatus = "Failed"
+                } Else {
+                  $env:testStatus = "Okay"
                 }
                 Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
                 Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE these lines if OKAY. :)"
