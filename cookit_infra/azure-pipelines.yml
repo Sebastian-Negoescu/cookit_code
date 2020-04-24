@@ -158,6 +158,7 @@ stages:
               Inline: |
                 Get-ChildItem env:* #should be named TEST_ARMTEMPLATES_VSOTESTSTATUS
           - task: AzureResourceGroupDeployment@2
+            condition: eq(variables['TEST_ARMTEMPLATES_VSOTESTSTATUS'], 'Okay')
             name: "Deploy_Resources"
             displayName: "Deploy Azure Resource Group Template"
             inputs:
