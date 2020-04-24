@@ -139,4 +139,4 @@ stages:
                 }
                 Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
                 Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE these lines if OKAY. :)"
-                Get-ChildItem env:TEST_ARMTEMPLATES_VSOTESTSTATUS
+                Get-ChildItem env:* #should be named TEST_ARMTEMPLATES_VSOTESTSTATUS
