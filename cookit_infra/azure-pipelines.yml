@@ -162,7 +162,7 @@ stages:
             displayName: "Deploy Azure Resource Group Template"
             inputs:
               azureSubscription: $(subscription)
-              action: "Create Or Update REsource Group"
+              action: Create Or Update Resource Group
               resourceGroupName: $(myVsoRgName)
               templateLocation: "URL of the file"
               csmFileLink: $(myVsoTemplateUri)
