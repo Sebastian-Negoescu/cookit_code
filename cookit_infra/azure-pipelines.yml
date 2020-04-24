@@ -77,10 +77,10 @@ stages:
               $env:templateUri = $($env:repoUrl) + "$(branch)" + "/cookit_infra/master.json"
               Write-Host "Complete TemplateURI set at: $($env:templateUri)" -ForegroundColor DarkYellow
               Write-Host "Converting the variables to Azure DevOps ENV VARs."  -ForegroundColor DarkBlue
-              Write-Host "##vso[task.setvariable variable=vsoPrefix;]$($env:prefix)"
-              Write-Host "##vso[task.setvariable variable=vsoRgName;]$($env:rgName)"
-              Write-Host "##vso[task.setvariable variable=vsoRepoUrl;]$($env:repoUrl)"
-              Write-Host "##vso[task.setvariable variable=vsoTemplateUri;]$($env:templateUri)"
+              Write-Host "##vso[task.setvariable variable=vsoPrefix;isOutput=true]$($env:prefix)"
+              Write-Host "##vso[task.setvariable variable=vsoRgName;isOutput=true]$($env:rgName)"
+              Write-Host "##vso[task.setvariable variable=vsoRepoUrl;isOutput=true]$($env:repoUrl)"
+              Write-Host "##vso[task.setvariable variable=vsoTemplateUri;isOutput=true]$($env:templateUri)"
         - task: AzurePowerShell@5
           name: "Check_ENVVARs"
           displayName: "Check ENV VARs"
@@ -115,6 +115,11 @@ stages:
         displayName: "Deploy Azure Resource Manager Template"
         dependsOn: "Create_RG"
         condition: succeeded()
+        variables:
+          myVsoPrefix: $[ dependencies.Create_RG.outputs['Set_Facts.vsoPrefix'] ]
+          myVsoRgName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRgName'] ]
+          myVsoRepoUrl: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRepoUrl'] ]
+          myVsoTemplateUri: $[ dependencies.Create_RG.outputs['Set_Facts.vsoTemplateUri'] ]
         steps:
           - task: AzurePowerShell@5
             name: "Test_ARMTemplates"
@@ -125,13 +130,13 @@ stages:
               ScriptType: "InlineScript"
               Inline: |
                 Write-Host "Testing RG Deployment..."
-                $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $(VSORGNAME) -TemplateUri $(VSOTEMPLATEURI) -branch "$(branch)"
+                $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $(myVsoRgName) -TemplateUri $(myVsoTemplateUri) -branch "$(branch)"
                 If ($($testCommand.Code)) {
                   Write-Host "Stop pipeline... See details below."
                   Write-Host "Error Code: $($testCommand.Code)"
                   Write-Host "Error Message: $($testCommand.Message)"
                   $env:testStatus = "Failed"
                 }
-                Write-Host "##vso[task.setvariable variable=vsoTestStatus;]$($env:testStatus)"
-                Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE this line if OKAY."
-                Get-ChildItem env:*
+                Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
+                Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE these lines if OKAY. :)"
+                Get-ChildItem env:vsoTestStatus
