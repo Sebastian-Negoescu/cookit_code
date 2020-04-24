@@ -111,3 +111,27 @@ stages:
                 New-AzResourceGroup -Name $(VSORGNAME) -Location "$(location)"
                 Write-Host "Resource Group created. Let's continue the deployment..."
               }
+      - job: "Create_Resources"
+        displayName: "Deploy Azure Resource Manager Template"
+        dependsOn: "Create_RG"
+        condition: succeeded()
+        steps:
+          - task: AzurePowerShell@5
+            name: "Test_ARMTemplates"
+            displayName: "Test Azure Resource Group Deployment"
+            inputs:
+              azureSubscription: $(subscription)
+              azurePowerShellVersion: LatestVersion
+              ScriptType: "InlineScript"
+              Inline: |
+                Write-Host "Testing RG Deployment..."
+                $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName "$(VSORGNAME)" -TemplateUri "$(VSOTEMPLATEURI)" -branch "$(branch)"
+                If ($($testCommand.Code)) {
+                  Write-Host "Stop pipeline... See details below."
+                  Write-Host "Error Code: $($testCommand.Code)"
+                  Write-Host "Error Message: $($testCommand.Message)"
+                  $env:testStatus = "Failed"
+                }
+                Write-Host "##vso[task.setvariable variable=vsoTestStatus;]$($env:testStatus)"
+                Write-Host "Verify if the VSOTESTSTATUS is in place. To DELETE this line if OKAY."
+                Get-ChildItem env:*
