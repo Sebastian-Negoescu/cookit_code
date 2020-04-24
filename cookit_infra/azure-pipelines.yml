@@ -73,7 +73,7 @@ stages:
               Write-Host "RG Name set as: $($env:rgName)." -ForegroundColor DarkYellow
               $env:repoUrl = $($masterContentJson).variables.repoUrl
               Write-Host "Repo URL set at: $($env:repoUrl)" -ForegroundColor DarkYellow
-              $env:templateUri = $($env:repoUrl) + $(branch) + "/cookit_infra/master.json"
+              $env:templateUri = $($env:repoUrl) + "$(branch)" + "/cookit_infra/master.json"
               Write-Host "Complete TemplateURI set at: $($env:templateUri)" -ForegroundColor DarkYellow
               Write-Host "Converting the variables to Azure DevOps ENV VARs."  -ForegroundColor DarkBlue
               Write-Host "##vso[task.setvariable variable=vsoPrefix;]$($env:prefix)"
