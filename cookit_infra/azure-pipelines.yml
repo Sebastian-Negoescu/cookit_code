@@ -125,7 +125,7 @@ stages:
               ScriptType: "InlineScript"
               Inline: |
                 Write-Host "Testing RG Deployment..."
-                $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName "$(VSORGNAME)" -TemplateUri "$(VSOTEMPLATEURI)" -branch "$(branch)"
+                $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $(VSORGNAME) -TemplateUri $(VSOTEMPLATEURI) -branch "$(branch)"
                 If ($($testCommand.Code)) {
                   Write-Host "Stop pipeline... See details below."
                   Write-Host "Error Code: $($testCommand.Code)"
