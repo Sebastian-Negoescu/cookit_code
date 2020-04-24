@@ -108,6 +108,6 @@ stages:
                 Write-Host "Resource Group $(VSORGNAME) already exists. Continue the deployment."
               } Else {
                 Write-Host "Resource Group $(VSORGNAME) does NOT exist. Let's create it first..."
-                New-AzResourceGroup -Name $(VSORGNAME) -Location $(location)
+                New-AzResourceGroup -Name $(VSORGNAME) -Location "$(location)"
                 Write-Host "Resource Group created. Let's continue the deployment..."
               }
