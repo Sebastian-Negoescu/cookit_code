@@ -81,12 +81,14 @@ stages:
               $env:repoUrl = $($masterContentJson).variables.repoUrl
               Write-Host "Repo URL set at: $($env:repoUrl)" -ForegroundColor DarkYellow
               $env:templateUri = $($env:repoUrl) + "$(branch)" + "/cookit_infra/master.json"
+              $env:deploymentName = $(branch) + "-" + $(Build.SourceVersion)
               Write-Host "Complete TemplateURI set at: $($env:templateUri)" -ForegroundColor DarkYellow
               Write-Host "Converting the variables to Azure DevOps ENV VARs."  -ForegroundColor DarkBlue
               Write-Host "##vso[task.setvariable variable=vsoPrefix;isOutput=true]$($env:prefix)"
               Write-Host "##vso[task.setvariable variable=vsoRgName;isOutput=true]$($env:rgName)"
               Write-Host "##vso[task.setvariable variable=vsoRepoUrl;isOutput=true]$($env:repoUrl)"
               Write-Host "##vso[task.setvariable variable=vsoTemplateUri;isOutput=true]$($env:templateUri)"
+              Write-Host "##vso[task.setvariable variable=vsoDeploymentName;isOutput=true]$($env:deploymentName)"
         - task: AzurePowerShell@5
           name: "Check_ENVVARs"
           displayName: "Check ENV VARs"
@@ -126,6 +128,7 @@ stages:
           myVsoRgName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRgName'] ]
           myVsoRepoUrl: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRepoUrl'] ]
           myVsoTemplateUri: $[ dependencies.Create_RG.outputs['Set_Facts.vsoTemplateUri'] ]
+          myVsoDeploymentName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoDeploymentName'] ]
         steps:
           - task: AzurePowerShell@5
             name: "Test_ARMTemplates"
@@ -164,6 +167,7 @@ stages:
             inputs:
               azureSubscription: $(subscription)
               action: Create Or Update Resource Group
+              deploymentName: $(myVsoDeploymentName)
               resourceGroupName: $(myVsoRgName)
               templateLocation: "URL of the file"
               csmFileLink: $(myVsoTemplateUri)
