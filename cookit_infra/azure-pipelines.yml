@@ -142,12 +142,12 @@ stages:
                   Write-Host "Error Code: $($testCommand.Code)"
                   Write-Host "Error Message: $($testCommand.Message)"
                   $env:testStatus = "Failed"
-                  Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
+                  Write-Host "##vso[task.setvariable variable=VSOTESTSTATUS;]$($env:testStatus)"
                 } Else {
                   $env:testStatus = "Okay"
-                  Write-Host "##vso[task.setvariable variable=vsoTestStatus;isOutput=true]$($env:testStatus)"
+                  Write-Host "##vso[task.setvariable variable=VSOTESTSTATUS;]$($env:testStatus)"
                 }
-                Write-Host "To be used in further Job:Tasks as TEST_ARMTEMPLATES_VSOTESTSTATUS"
+                Write-Host "To be used in further Job:Tasks as VSOTESTSTATUS (not TEST_ARMTEMPLATES_VSOTESTSTATUS)"
           - task: AzurePowerShell@5
             name: "Check_Status"
             displayName: "List New_EnvVars"
@@ -156,9 +156,9 @@ stages:
               azurePowerShellVersion: "LatestVersion"
               ScriptType: "InlineScript"
               Inline: |
-                Get-ChildItem env:* #should be named TEST_ARMTEMPLATES_VSOTESTSTATUS
+                Get-ChildItem env:* #should be named VSOTESTSTATUS (not TEST_ARMTEMPLATES_VSOTESTSTATUS)
           - task: AzureResourceGroupDeployment@2
-            condition: and(succeeded(), eq(variables['vsoTestStatus'], 'Okay'))
+            condition: and(succeeded(), eq(variables['VSOTESTSTATUS'], 'Okay'))
             name: "Deploy_Resources"
             displayName: "Deploy Azure Resource Group Template"
             inputs:
