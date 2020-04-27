@@ -52,8 +52,8 @@ stages:
         #######################################################################################################################
 
   - stage: "Build_App"
-    dependsOn: "Test_Agent_Connectivity"
-    condition: succeeded()
+    # dependsOn: "Test_Agent_Connectivity"
+    # condition: succeeded()
     displayName: "Build the Application"
     pool: "Default"
     jobs:
