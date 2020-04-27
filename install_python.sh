@@ -7,10 +7,10 @@
 ################################################################################
 
 # Set Home Agent Tools Directory
-AGENT_TOOLSDIRECTORY=/home/ansible/myAgent/_work/_tool/
+AGENT_TOOLSDIRECTORY=/home/ansible/myAgent/_work/_tool
 
 # Install Python, Python 3, pip, pip3
-apt-get install -y --no-install-recommends python python-dev python-pip python3 python3-dev python3-pip
+sudo apt-get install -y --no-install-recommends python python-dev python-pip python3 python3-dev python3-pip
 
 # Install PyPy 2.7 to $AGENT_TOOLSDIRECTORY
 wget -q -P /tmp https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.1.0-linux64.tar.bz2
@@ -21,11 +21,11 @@ mv /tmp/pypy2.7-v7.1.0-linux64 $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64
 touch $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64.complete
 
 # add pypy to PATH by default
-ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy /usr/local/bin/pypy
+sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy /usr/local/bin/pypy
 # pypy will be the python in PATH when its tools cache directory is prepended to PATH
 # PEP 394-style symlinking; don't bother with minor version
-ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python2
-ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python2 $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python
+sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python2
+sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python2 $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python
 
 # Install latest Pip for PyPy2
 $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy -m ensurepip
@@ -45,11 +45,11 @@ mv /tmp/pypy3.5-v7.0.0-linux64 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64
 touch $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64.complete
 
 # add pypy3 to PATH by default
-ln -s $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 /usr/local/bin/pypy3
+sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 /usr/local/bin/pypy3
 # pypy3 will be the python in PATH when its tools cache directory is prepended to PATH
 # PEP 394-style symlinking; don't bother with minor version
-ln -s $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/python3
-ln -s $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/python3 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/python
+sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/python3
+sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/python3 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/python
 
 # Install latest Pip for PyPy3
 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 -m ensurepip
@@ -57,14 +57,21 @@ $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 -m pip install --ignore-installed
 
 
 
+# MAKE THE ACTUAL PYTHON V3.8.1 BE USED BY THE AGENT
+wget -q -P /tmp https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
+tar -x -C /tmp -f /tmp/Python-3.8.1.tgz
+rm /tmp/Python-3.8.1.tgz
+mkdir -p $AGENT_TOOLSDIRECTORY/Python/3.8.1/x64
+cd /tmp/Python-3.8.1
+sudo apt-get install zlib1-dev
+sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
+./configure --prefix=$AGENT_TOOLSDIRECTORY/Python/3.8.1/x64 --with-zlib=/usr/include
+make
+make install
 
-# wget -q -P /tmp https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
-# tar -x -C /tmp -f /tmp/Python-3.8.1.tgz
-# rm /tmp/Python-3.8.1.tgz
-# mkdir -p $AGENT_TOOLSDIRECTORY/Python/3.8.1
-# mv /tmp/Python-3.8.1.
-
-
+# YOU SHOULD NOW BE ABLE TO USE THE AZ DEVOPS PYTHON TASK
 
 
 
