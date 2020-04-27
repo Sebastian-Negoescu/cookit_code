@@ -31,11 +31,6 @@ sudo ln -s $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/python2 $AGENT_TOOLSDIRECTO
 $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy -m ensurepip
 $AGENT_TOOLSDIRECTORY/PyPy/2.7.13/x64/bin/pypy -m pip install --ignore-installed pip
 
-
-
-
-
-
 # Install PyPy 3.5 to $AGENT_TOOLSDIRECTORY
 wget -q -P /tmp https://bitbucket.org/pypy/pypy/downloads/pypy3.5-v7.0.0-linux64.tar.bz2
 tar -x -C /tmp -f /tmp/pypy3.5-v7.0.0-linux64.tar.bz2
@@ -56,7 +51,6 @@ $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 -m ensurepip
 $AGENT_TOOLSDIRECTORY/PyPy/3.5.3/x64/bin/pypy3 -m pip install --ignore-installed pip
 
 
-
 # MAKE THE ACTUAL PYTHON V3.8.1 BE USED BY THE AGENT
 wget -q -P /tmp https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz
 tar -x -C /tmp -f /tmp/Python-3.8.1.tgz
@@ -70,17 +64,9 @@ xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
 ./configure --prefix=$AGENT_TOOLSDIRECTORY/Python/3.8.1/x64 --with-zlib=/usr/include
 make
 make install
+touch $AGENT_TOOLSDIRECTORY/Python/3.8.1/x64.complete
 
 # YOU SHOULD NOW BE ABLE TO USE THE AZ DEVOPS PYTHON TASK
-
-
-
-
-
-
-
-
-
 
 
 # Run tests to determine that the software installed as expected
