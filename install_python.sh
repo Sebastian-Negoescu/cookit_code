@@ -57,7 +57,6 @@ tar -x -C /tmp -f /tmp/Python-3.8.1.tgz
 rm /tmp/Python-3.8.1.tgz
 mkdir -p $AGENT_TOOLSDIRECTORY/Python/3.8.1/x64
 cd /tmp/Python-3.8.1
-sudo apt-get install zlib1-dev
 sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
 libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
 xz-utils tk-dev libffi-dev liblzma-dev python-openssl git

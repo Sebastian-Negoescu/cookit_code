@@ -172,6 +172,24 @@ stages:
           myVsoDeploymentName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoDeploymentName'] ]
         steps:
           - task: AzurePowerShell@5
+            name: "Export_VARS"
+            displayName: "Export Variables for deployment stages"
+            inputs:
+              azureSubscription: "$(subscription)"
+              azurePowerShellVersion: "LatestVersion"
+              ScriptType: "InlineScript"
+              Inline: |
+                New-Item -Name "variables" -Type Directory -Path "$(Pipeline.Workspace)"
+                $env:myVsoPrefix > "$(Pipeline.Workspace)/variables/myVsoPrefix"
+                Write-Host "Verify if the Value of the Variable is written..."
+                Get-Content $(Pipeline.Workspace)/variables/myVsoPrefix
+          - task: PublishPipelineArtifact@1
+            name: "Publish_Variables"
+            displayName: "Publish Variables as Artifact"
+            inputs:
+              artifact: "myVarsArtifact"
+              targetPath: "$(Pipeline.Workspace)/variables" 
+          - task: AzurePowerShell@5
             name: "Test_ARMTemplates"
             displayName: "Test Azure Resource Group Deployment"
             inputs:
@@ -216,12 +234,48 @@ stages:
                 -branch "$(branch)"
               deploymentMode: "Incremental"
 
-        ###########################################################################################################################
-        ###################### CONTINUE AFTER LUNCH WITH THE CREATION OF THE RESOURCES && DEPLOY TO SLOT ##########################
-        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
-        ###########################################################################################################################
+  - stage: "Deploy_Application"
+    displayName: "Deploy Django Application"
+    dependsOn:
+      - "Build_App"
+      - "Create_Infrastructure"
+    condition: succeeded()
+    pool: "Default"
+    jobs:
+      - job: "Deploy_App_Dev"
+        displayName: "Deploy Django to DEV"
+        steps:
+        - task: DownloadPipelineArtifact@2
+          name: "Download_myVarsArtifact"
+          inputs:
+            artifactName: "myVarsArtifact"
+            source: "current"
+        # Read the variable from the file, then expose it in the job
+        # - task: AzurePowerShell@5
+        #   name: "Read_Variable"
+        #   inputs:
+        #     azureSubscription: $(subscription)
+        #     azurePowerShellVersion: "LatestVersion"
+        #     ScriptType: "InlineScript"
+        #     Inline: |
+        #       $myPrefix = Get-Content "$(Pipeline.Workspace)/variables/"
+        #   displayName: "Download the variables from Build"
+        # - task: AzureRmWebAppDeployment@4
+        #   displayName: "DeployDEV"
+        #   inputs:
+        #     azureSubscription: "$(subscription)"
+        #     WebAppName: 
 
-        ###########################################################################################################################
-        ###################### DEPLOY TO SLOT SLOT PART && MAYBE TO MMASTER APP - JUST CHECK POSIBILITIES #########################
-        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
-        ###########################################################################################################################
+
+  ###########################################################################################################################
+  ###################### CONTINUE AFTER LUNCH WITH THE CREATION OF THE RESOURCES && DEPLOY TO SLOT ##########################
+  ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
+  ###########################################################################################################################
+
+        
+
+  ###########################################################################################################################
+  ###################### DEPLOY TO SLOT SLOT PART && MAYBE TO MMASTER APP - JUST CHECK POSIBILITIES #########################
+  ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
+  ###########################################################################################################################
+
