@@ -7,43 +7,43 @@ variables:
   location: "West Europe"
 
 stages:
-  # - stage: "Test_Agent_connectivity"
-  #   pool: "Default"
-  #   displayName: "Testing Agent Connectivity"
-  #   jobs:
-  #     - job: "Clean_Workspace"
-  #       workspace:
-  #         clean: all
-  #     - job: "EchoAgent_DummyText"
-  #       displayName: "Echo Agent - Dummy Text"
-  #       steps:
-  #       - bash: |
-  #           which bash
-  #           echo "Agent Name & ID: $AGENT_NAME : $AGENT_ID."
-  #           echo "Current working directory: $SYSTEM_DEFAULTWORKINGDIRECTORY"
-  #           echo "Current Build Sources directory: $BUILD_SOURCESDIRECTORY"
-  #         displayName: "Ping"
-  #         continueOnError: true
-  #     - job: "Assert_Connectivity"
-  #       dependsOn: "EchoAgent_DummyText"
-  #       condition: succeeded()
-  #       displayName: "Assert Connectivity with the Agent"
-  #       steps:
-  #       - task: Bash@3
-  #         displayName: "Assert 'PING'"
-  #         inputs:
-  #           targetType: inline
-  #           script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
-  #     - job: "Check_FileTree"
-  #       dependsOn: "Assert_Connectivity"
-  #       condition: succeeded()
-  #       displayName: "Check the structure of the repo"
-  #       steps:
-  #       - task: PowerShell@2
-  #         displayName: "Filetree listing"
-  #         inputs:
-  #           targetType: inline
-  #           script: "Get-Location && Get-ChildItem -Recurse"
+  - stage: "Test_Agent_connectivity"
+    pool: "Default"
+    displayName: "Testing Agent Connectivity"
+    jobs:
+      - job: "Clean_Workspace"
+        workspace:
+          clean: all
+      - job: "EchoAgent_DummyText"
+        displayName: "Echo Agent - Dummy Text"
+        steps:
+        - bash: |
+            which bash
+            echo "Agent Name & ID: $AGENT_NAME : $AGENT_ID."
+            echo "Current working directory: $SYSTEM_DEFAULTWORKINGDIRECTORY"
+            echo "Current Build Sources directory: $BUILD_SOURCESDIRECTORY"
+          displayName: "Ping"
+          continueOnError: true
+      - job: "Assert_Connectivity"
+        dependsOn: "EchoAgent_DummyText"
+        condition: succeeded()
+        displayName: "Assert Connectivity with the Agent"
+        steps:
+        - task: Bash@3
+          displayName: "Assert 'PING'"
+          inputs:
+            targetType: inline
+            script: "echo 'Connectivity: SUCCESSFULL; continue the pipeline...'"
+      - job: "Check_FileTree"
+        dependsOn: "Assert_Connectivity"
+        condition: succeeded()
+        displayName: "Check the structure of the repo"
+        steps:
+        - task: PowerShell@2
+          displayName: "Filetree listing"
+          inputs:
+            targetType: inline
+            script: "Get-Location && Get-ChildItem -Recurse"
 
         #######################################################################################################################
         ###################### FIRST CREATE A STAGE FOR BUILDING THE DJANGO APPLICATION BEFORE INFRA ##########################
@@ -52,8 +52,8 @@ stages:
         #######################################################################################################################
 
   - stage: "Build_App"
-    # dependsOn: "Test_Agent_Connectivity"
-    # condition: succeeded()
+    dependsOn: "Test_Agent_Connectivity"
+    condition: succeeded()
     displayName: "Build the Application"
     pool: "Default"
     jobs:
@@ -91,130 +91,130 @@ stages:
             ArtifactName: "CookIT"
             publishLocation: "Container"
 
-  # - stage: "Create_Infrastructure"
-  #   dependsOn: "Test_Agent_Connectivity"
-  #   condition: succeeded()
-  #   pool: "Default"
-  #   displayName: "Create Azure Infrastructure"
-  #   jobs:
-  #     - job: "Create_RG"
-  #       displayName: "Create Resource Group"
-  #       steps:
-  #       - task: PowerShell@2
-  #         name: "Set_Facts"
-  #         displayName: "Set Facts - register Vars"
-  #         inputs:
-  #           targetType: "inline"
-  #           script: |
-  #             $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
-  #             Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
-  #             # Write-Host "Initial Read of the file:" -ForegroundColor DarkBlue # TO DELETE
-  #             # Get-Content -Path $($env:masterFile) # TO DELETE
-  #             $env:masterContent = Get-Content -Path $($env:masterFile) -Raw
-  #             Write-Host "Print the content of the Master File for double-checking purposes..."
-  #             $($env:masterContent)
-  #             $masterContentJson = ConvertFrom-JSON $($env:masterContent)
-  #             $env:prefix = $($masterContentJson).parameters.prefix.defaultValue
-  #             Write-Host "Prefix set as: $($env:prefix)." -ForegroundColor DarkYellow
-  #             $env:rgName = $($env:prefix) + "_rg"
-  #             Write-Host "RG Name set as: $($env:rgName)." -ForegroundColor DarkYellow
-  #             $env:repoUrl = $($masterContentJson).variables.repoUrl
-  #             Write-Host "Repo URL set at: $($env:repoUrl)" -ForegroundColor DarkYellow
-  #             $env:templateUri = $($env:repoUrl) + "$(branch)" + "/cookit_infra/master.json"
-  #             $env:deploymentName = "$(branch)" + "-" + "$(Build.SourceVersion)"
-  #             Write-Host "Complete TemplateURI set at: $($env:templateUri)" -ForegroundColor DarkYellow
-  #             Write-Host "Converting the variables to Azure DevOps ENV VARs."  -ForegroundColor DarkBlue
-  #             Write-Host "##vso[task.setvariable variable=vsoPrefix;isOutput=true]$($env:prefix)"
-  #             Write-Host "##vso[task.setvariable variable=vsoRgName;isOutput=true]$($env:rgName)"
-  #             Write-Host "##vso[task.setvariable variable=vsoRepoUrl;isOutput=true]$($env:repoUrl)"
-  #             Write-Host "##vso[task.setvariable variable=vsoTemplateUri;isOutput=true]$($env:templateUri)"
-  #             Write-Host "##vso[task.setvariable variable=vsoDeploymentName;isOutput=true]$($env:deploymentName)"
-  #       - task: AzurePowerShell@5
-  #         name: "Check_ENVVARs"
-  #         displayName: "Check ENV VARs"
-  #         inputs:
-  #           azureSubscription: $(subscription)
-  #           azurePowerShellVersion: "LatestVersion"
-  #           ScriptType: "InlineScript"
-  #           Inline: |
-  #             gci env:*
-  #       ##############################################################################################################
-  #       ###################### CONTINUE TOMORROW WITH THE CREATION OF THE RESOURCES AND APP ##########################
-  #       ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING #########################
-  #       ##############################################################################################################
-  #       - task: AzurePowerShell@5
-  #         name: "Check_RG"
-  #         displayName: "Check if Resource Group exists"
-  #         inputs:
-  #           azureSubscription: $(subscription)
-  #           azurePowerShellVersion: "LatestVersion"
-  #           ScriptType: "InlineScript"
-  #           Inline: |
-  #             Write-Host "Check if Resource Group $(Set_Facts.vsoRgName) exists..."
-  #             Get-AzResourceGroup -Name $(Set_Facts.vsoRgName) -ErrorAction SilentlyContinue
-  #             If ($?) {
-  #               Write-Host "Resource Group $(Set_Facts.vsoRgName) already exists. Continue the deployment."
-  #             } Else {
-  #               Write-Host "Resource Group $(Set_Facts.vsoRgName) does NOT exist. Let's create it first..."
-  #               New-AzResourceGroup -Name $(Set_Facts.vsoRgName) -Location "$(location)"
-  #               Write-Host "Resource Group created. Let's continue the deployment..."
-  #             }
+  - stage: "Create_Infrastructure"
+    dependsOn: "Test_Agent_Connectivity"
+    condition: succeeded()
+    pool: "Default"
+    displayName: "Create Azure Infrastructure"
+    jobs:
+      - job: "Create_RG"
+        displayName: "Create Resource Group"
+        steps:
+        - task: PowerShell@2
+          name: "Set_Facts"
+          displayName: "Set Facts - register Vars"
+          inputs:
+            targetType: "inline"
+            script: |
+              $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
+              Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
+              # Write-Host "Initial Read of the file:" -ForegroundColor DarkBlue # TO DELETE
+              # Get-Content -Path $($env:masterFile) # TO DELETE
+              $env:masterContent = Get-Content -Path $($env:masterFile) -Raw
+              Write-Host "Print the content of the Master File for double-checking purposes..."
+              $($env:masterContent)
+              $masterContentJson = ConvertFrom-JSON $($env:masterContent)
+              $env:prefix = $($masterContentJson).parameters.prefix.defaultValue
+              Write-Host "Prefix set as: $($env:prefix)." -ForegroundColor DarkYellow
+              $env:rgName = $($env:prefix) + "_rg"
+              Write-Host "RG Name set as: $($env:rgName)." -ForegroundColor DarkYellow
+              $env:repoUrl = $($masterContentJson).variables.repoUrl
+              Write-Host "Repo URL set at: $($env:repoUrl)" -ForegroundColor DarkYellow
+              $env:templateUri = $($env:repoUrl) + "$(branch)" + "/cookit_infra/master.json"
+              $env:deploymentName = "$(branch)" + "-" + "$(Build.SourceVersion)"
+              Write-Host "Complete TemplateURI set at: $($env:templateUri)" -ForegroundColor DarkYellow
+              Write-Host "Converting the variables to Azure DevOps ENV VARs."  -ForegroundColor DarkBlue
+              Write-Host "##vso[task.setvariable variable=vsoPrefix;isOutput=true]$($env:prefix)"
+              Write-Host "##vso[task.setvariable variable=vsoRgName;isOutput=true]$($env:rgName)"
+              Write-Host "##vso[task.setvariable variable=vsoRepoUrl;isOutput=true]$($env:repoUrl)"
+              Write-Host "##vso[task.setvariable variable=vsoTemplateUri;isOutput=true]$($env:templateUri)"
+              Write-Host "##vso[task.setvariable variable=vsoDeploymentName;isOutput=true]$($env:deploymentName)"
+        - task: AzurePowerShell@5
+          name: "Check_ENVVARs"
+          displayName: "Check ENV VARs"
+          inputs:
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: "InlineScript"
+            Inline: |
+              gci env:*
+        ##############################################################################################################
+        ###################### CONTINUE TOMORROW WITH THE CREATION OF THE RESOURCES AND APP ##########################
+        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING #########################
+        ##############################################################################################################
+        - task: AzurePowerShell@5
+          name: "Check_RG"
+          displayName: "Check if Resource Group exists"
+          inputs:
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: "InlineScript"
+            Inline: |
+              Write-Host "Check if Resource Group $(Set_Facts.vsoRgName) exists..."
+              Get-AzResourceGroup -Name $(Set_Facts.vsoRgName) -ErrorAction SilentlyContinue
+              If ($?) {
+                Write-Host "Resource Group $(Set_Facts.vsoRgName) already exists. Continue the deployment."
+              } Else {
+                Write-Host "Resource Group $(Set_Facts.vsoRgName) does NOT exist. Let's create it first..."
+                New-AzResourceGroup -Name $(Set_Facts.vsoRgName) -Location "$(location)"
+                Write-Host "Resource Group created. Let's continue the deployment..."
+              }
               
-  #     - job: "Create_Resources"
-  #       displayName: "Deploy Azure Resource Manager Template"
-  #       dependsOn: "Create_RG"
-  #       condition: succeeded()
-  #       variables:
-  #         myVsoPrefix: $[ dependencies.Create_RG.outputs['Set_Facts.vsoPrefix'] ]
-  #         myVsoRgName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRgName'] ]
-  #         myVsoRepoUrl: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRepoUrl'] ]
-  #         myVsoTemplateUri: $[ dependencies.Create_RG.outputs['Set_Facts.vsoTemplateUri'] ]
-  #         myVsoDeploymentName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoDeploymentName'] ]
-  #       steps:
-  #         - task: AzurePowerShell@5
-  #           name: "Test_ARMTemplates"
-  #           displayName: "Test Azure Resource Group Deployment"
-  #           inputs:
-  #             azureSubscription: $(subscription)
-  #             azurePowerShellVersion: LatestVersion
-  #             ScriptType: "InlineScript"
-  #             Inline: |
-  #               Write-Host "Testing RG Deployment..."
-  #               $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $(myVsoRgName) -TemplateUri $(myVsoTemplateUri) -branch "$(branch)"
-  #               If ($($testCommand.Code)) {
-  #                 Write-Host "Stop pipeline... See details below."
-  #                 Write-Host "Error Code: $($testCommand.Code)"
-  #                 Write-Host "Error Message: $($testCommand.Message)"
-  #                 $env:testStatus = "Failed"
-  #                 Write-Host "##vso[task.setvariable variable=VSOTESTSTATUS;]$($env:testStatus)"
-  #               } Else {
-  #                 $env:testStatus = "Okay"
-  #                 Write-Host "##vso[task.setvariable variable=VSOTESTSTATUS;]$($env:testStatus)"
-  #               }
-  #               Write-Host "To be used in further Job:Tasks as VSOTESTSTATUS (not TEST_ARMTEMPLATES_VSOTESTSTATUS)"
-  #         - task: AzurePowerShell@5
-  #           name: "Check_Status"
-  #           displayName: "List New_EnvVars"
-  #           inputs:
-  #             azureSubscription: $(subscription)
-  #             azurePowerShellVersion: "LatestVersion"
-  #             ScriptType: "InlineScript"
-  #             Inline: |
-  #               Get-ChildItem env:* #should be named VSOTESTSTATUS (not TEST_ARMTEMPLATES_VSOTESTSTATUS)
-  #         - task: AzureResourceGroupDeployment@2
-  #           condition: and(succeeded(), eq(variables['VSOTESTSTATUS'], 'Okay'))
-  #           name: "Deploy_Resources"
-  #           displayName: "Deploy Azure Resource Group Template"
-  #           inputs:
-  #             azureSubscription: $(subscription)
-  #             action: Create Or Update Resource Group
-  #             deploymentName: $(myVsoDeploymentName)
-  #             resourceGroupName: $(myVsoRgName)
-  #             templateLocation: "URL of the file"
-  #             csmFileLink: $(myVsoTemplateUri)
-  #             overrideParameters:
-  #               -branch "$(branch)"
-  #             deploymentMode: "Incremental"
+      - job: "Create_Resources"
+        displayName: "Deploy Azure Resource Manager Template"
+        dependsOn: "Create_RG"
+        condition: succeeded()
+        variables:
+          myVsoPrefix: $[ dependencies.Create_RG.outputs['Set_Facts.vsoPrefix'] ]
+          myVsoRgName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRgName'] ]
+          myVsoRepoUrl: $[ dependencies.Create_RG.outputs['Set_Facts.vsoRepoUrl'] ]
+          myVsoTemplateUri: $[ dependencies.Create_RG.outputs['Set_Facts.vsoTemplateUri'] ]
+          myVsoDeploymentName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoDeploymentName'] ]
+        steps:
+          - task: AzurePowerShell@5
+            name: "Test_ARMTemplates"
+            displayName: "Test Azure Resource Group Deployment"
+            inputs:
+              azureSubscription: $(subscription)
+              azurePowerShellVersion: LatestVersion
+              ScriptType: "InlineScript"
+              Inline: |
+                Write-Host "Testing RG Deployment..."
+                $testCommand = Test-AzResourceGroupDeployment -ResourceGroupName $(myVsoRgName) -TemplateUri $(myVsoTemplateUri) -branch "$(branch)"
+                If ($($testCommand.Code)) {
+                  Write-Host "Stop pipeline... See details below."
+                  Write-Host "Error Code: $($testCommand.Code)"
+                  Write-Host "Error Message: $($testCommand.Message)"
+                  $env:testStatus = "Failed"
+                  Write-Host "##vso[task.setvariable variable=VSOTESTSTATUS;]$($env:testStatus)"
+                } Else {
+                  $env:testStatus = "Okay"
+                  Write-Host "##vso[task.setvariable variable=VSOTESTSTATUS;]$($env:testStatus)"
+                }
+                Write-Host "To be used in further Job:Tasks as VSOTESTSTATUS (not TEST_ARMTEMPLATES_VSOTESTSTATUS)"
+          - task: AzurePowerShell@5
+            name: "Check_Status"
+            displayName: "List New_EnvVars"
+            inputs:
+              azureSubscription: $(subscription)
+              azurePowerShellVersion: "LatestVersion"
+              ScriptType: "InlineScript"
+              Inline: |
+                Get-ChildItem env:* #should be named VSOTESTSTATUS (not TEST_ARMTEMPLATES_VSOTESTSTATUS)
+          - task: AzureResourceGroupDeployment@2
+            condition: and(succeeded(), eq(variables['VSOTESTSTATUS'], 'Okay'))
+            name: "Deploy_Resources"
+            displayName: "Deploy Azure Resource Group Template"
+            inputs:
+              azureSubscription: $(subscription)
+              action: Create Or Update Resource Group
+              deploymentName: $(myVsoDeploymentName)
+              resourceGroupName: $(myVsoRgName)
+              templateLocation: "URL of the file"
+              csmFileLink: $(myVsoTemplateUri)
+              overrideParameters:
+                -branch "$(branch)"
+              deploymentMode: "Incremental"
 
         ###########################################################################################################################
         ###################### CONTINUE AFTER LUNCH WITH THE CREATION OF THE RESOURCES && DEPLOY TO SLOT ##########################
