@@ -64,7 +64,7 @@ stages:
           name: "Set_Python_v3x"
           displayName: "Set Python Version"
           inputs:
-            versionSpec: '3.7.5'
+            versionSpec: '3.8.1'
             addToPath: true
         - task: CmdLine@2
           name: "Install_Dependencies"
