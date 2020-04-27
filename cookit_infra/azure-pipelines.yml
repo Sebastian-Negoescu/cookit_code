@@ -66,6 +66,7 @@ stages:
           inputs:
             versionSpec: '3.8.1'
             addToPath: true
+            # architecture: x64
         - task: CmdLine@2
           name: "Install_Dependencies"
           displayName: "Install Dependencies"
