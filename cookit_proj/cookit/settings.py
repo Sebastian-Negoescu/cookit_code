@@ -25,8 +25,8 @@ SECRET_KEY = '9j^#_f-(c*u2)y=3#tw!)(kxf93@!l6)uyhq(w+xsm&o!o*j85'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://cookit-webapp-dev.azurewebsites.net']
-
+# ALLOWED_HOSTS = ["localhost", "127.0.0.1", "cookit-webapp-dev.azurewebsites.net"]
+ALLOWED_HOSTS = ['cookit-webapp-dev.azurewebsites.net']
 # Application definition
 
 INSTALLED_APPS = [
