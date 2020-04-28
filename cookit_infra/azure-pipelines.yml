@@ -169,18 +169,22 @@ stages:
               Inline: |
                 Get-ChildItem env:*
           - task: AzurePowerShell@5
-            name: "Export_VAR"
-            displayName: "Export Variable for deployment stages"
+            name: "Export_VARs"
+            displayName: "Export Variables for deployment stages"
             inputs:
               azureSubscription: "$(subscription)"
               azurePowerShellVersion: "LatestVersion"
               ScriptType: "InlineScript"
               Inline: |
+                ### Set variable for prefix
                 New-Item -Name "variables" -Type Directory -Path "$(Pipeline.Workspace)" -Force
                 $env:MYVSOPREFIX > "$(Pipeline.Workspace)/variables/myVsoPrefix"
-                Get-ChildItem -Path "$(Pipeline.Workspace)" -Recurse
-                Write-Host "Verify if the Value of the Variable is written..."
+                Write-Host "Verify if the Value of the Prefix variable is written..."
                 Get-Content $(Pipeline.Workspace)/variables/myVsoPrefix
+                ### Set variable for Resource Group
+                $env:MYVSORGNAME > "$(Pipeline.Workspace)/variables/myVsoRgName"
+                Write-Host "Verify if the Value of the RGName variable is written..."
+                Get-Content $(Pipeline.Workspace)/variables/myVsoRgName
           - task: PublishPipelineArtifact@1
             name: "Publish_Variables"
             displayName: "Publish Variables as Artifact"
@@ -251,7 +255,8 @@ stages:
             targetPath: "$(Pipeline.Workspace)"
         # Read the variable from the file, then expose it in the job 
         - task: AzurePowerShell@5
-          name: "Read_Variable"
+          name: "Read_Variables"
+          displayName: "Download the variables from Build"
           inputs:
             azureSubscription: $(subscription)
             azurePowerShellVersion: "LatestVersion"
@@ -261,10 +266,26 @@ stages:
               $env:myPrefix = $myPrefix
               Write-Host "My Prefix to be used: $($env:myPrefix)"
               Write-Host "##vso[task.setvariable variable=VSOPREFIX;]$($env:myPrefix)"
+              $myRgName = Get-Content "$(Pipeline.Workspace)/myVsoRgName"
+              $env:myRgName = $myRgName
+              Write-Host "My Resource Group Name to be used: $($env:myRgName)"
+              Write-Host "##vso[task.setvariable variable=VSORGNAME;]$($env:myRgName)"
               # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
-          displayName: "Download the variables from Build"
-        # - task: AzureRmWebAppDeployment@4
-        #   displayName: "DeployDEV"
-        #   inputs:
-        #     azureSubscription: "$(subscription)"
-        #     WebAppName: 
+        - task: DownloadBuildArtifacts@0
+          name: "Download_DjangoArtifact"
+          displayName: "Download Application Artifact"
+          inputs:
+            artifactName: "CookIT"
+            buildType: "current"
+            downloadType: "single"
+            downloadPath: $(Pipeline.Workspace)
+        - task: AzureRmWebAppDeployment@4
+          displayName: "DeployDEV"
+          inputs:
+            azureSubscription: "$(subscription)"
+            appType: WebAppLinux
+            ResourceGroupName: $(VSORGNAME)
+            WebAppName: "$(VSOPREFIX)"
+            deployToSlotOrASE: true
+            SlotName: "$(branch)"
+            packageForLinux: "Application$(Build.BuildId).zip"
