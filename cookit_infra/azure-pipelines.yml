@@ -64,7 +64,7 @@ stages:
           name: "Install_Dependencies"
           displayName: "Install Dependencies"
           inputs:
-            script: "pip3 install -r cookit_proj/requirements.txt"
+            script: "pip install -r cookit_proj/requirements.txt"
         ### TO DO: CommandLine - pytest: install pytest, run UNIT tests, using --jUnitXML for results
         ### TO DO: Publish Test Artifact - publish test results as JUnit format with file **/test-results.xml
         - task: ArchiveFiles@2
