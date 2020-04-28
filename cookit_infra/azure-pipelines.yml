@@ -45,12 +45,6 @@ stages:
             targetType: inline
             script: "Get-Location && Get-ChildItem -Recurse"
 
-        #######################################################################################################################
-        ###################### FIRST CREATE A STAGE FOR BUILDING THE DJANGO APPLICATION BEFORE INFRA ##########################
-        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ##################################
-        ###################### TEST AS WELL PARALLED JOBS FOR DJANGO BUILD && INFRA DEPLOYMENT ???? ###########################
-        #######################################################################################################################
-
   - stage: "Build_App"
     dependsOn: "Test_Agent_Connectivity"
     condition: succeeded()
@@ -66,7 +60,6 @@ stages:
           inputs:
             versionSpec: '3.8.1'
             addToPath: true
-            # architecture: x64
         - task: CmdLine@2
           name: "Install_Dependencies"
           displayName: "Install Dependencies"
@@ -138,10 +131,6 @@ stages:
             ScriptType: "InlineScript"
             Inline: |
               gci env:*
-        ##############################################################################################################
-        ###################### CONTINUE TOMORROW WITH THE CREATION OF THE RESOURCES AND APP ##########################
-        ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING #########################
-        ##############################################################################################################
         - task: AzurePowerShell@5
           name: "Check_RG"
           displayName: "Check if Resource Group exists"
@@ -172,8 +161,16 @@ stages:
           myVsoDeploymentName: $[ dependencies.Create_RG.outputs['Set_Facts.vsoDeploymentName'] ]
         steps:
           - task: AzurePowerShell@5
-            name: "Export_VARS"
-            displayName: "Export Variables for deployment stages"
+            name: "Check_EnvVarsNaming"
+            inputs:
+              azureSubscription: "$(subscription)"
+              azurePowerShellVersion: "LatestVersion"
+              ScriptType: "InlineScript"
+              Inline: |
+                Get-ChildItem env:*
+          - task: AzurePowerShell@5
+            name: "Export_VAR"
+            displayName: "Export Variable for deployment stages"
             inputs:
               azureSubscription: "$(subscription)"
               azurePowerShellVersion: "LatestVersion"
@@ -182,6 +179,7 @@ stages:
                 New-Item -Name "variables" -Type Directory -Path "$(Pipeline.Workspace)"
                 $env:myVsoPrefix > "$(Pipeline.Workspace)/variables/myVsoPrefix"
                 Write-Host "Verify if the Value of the Variable is written..."
+                Get-ChildItem -Path "$(Pipeline.Workspace)" -Recurse
                 Get-Content $(Pipeline.Workspace)/variables/myVsoPrefix
           - task: PublishPipelineArtifact@1
             name: "Publish_Variables"
@@ -250,7 +248,8 @@ stages:
           inputs:
             artifactName: "myVarsArtifact"
             source: "current"
-        # Read the variable from the file, then expose it in the job
+            targetPath: "$(Pipeline.Workspace)"
+        # Read the variable from the file, then expose it in the job | CONTINUE TOMORROW IT IS NOT SAVED WELL
         # - task: AzurePowerShell@5
         #   name: "Read_Variable"
         #   inputs:
@@ -258,7 +257,9 @@ stages:
         #     azurePowerShellVersion: "LatestVersion"
         #     ScriptType: "InlineScript"
         #     Inline: |
-        #       $myPrefix = Get-Content "$(Pipeline.Workspace)/variables/"
+        #       $myPrefix = Get-Content "$(Pipeline.Workspace)/"
+        #       Write-Host "My Prefix to be used: $($myPrefix)"
+        #       # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
         #   displayName: "Download the variables from Build"
         # - task: AzureRmWebAppDeployment@4
         #   displayName: "DeployDEV"
