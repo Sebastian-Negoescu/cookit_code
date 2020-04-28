@@ -177,9 +177,9 @@ stages:
               ScriptType: "InlineScript"
               Inline: |
                 New-Item -Name "variables" -Type Directory -Path "$(Pipeline.Workspace)"
-                $env:myVsoPrefix > "$(Pipeline.Workspace)/variables/myVsoPrefix"
-                Write-Host "Verify if the Value of the Variable is written..."
+                $env:MYVSOPREFIX > "$(Pipeline.Workspace)/variables/myVsoPrefix"
                 Get-ChildItem -Path "$(Pipeline.Workspace)" -Recurse
+                Write-Host "Verify if the Value of the Variable is written..."
                 Get-Content $(Pipeline.Workspace)/variables/myVsoPrefix
           - task: PublishPipelineArtifact@1
             name: "Publish_Variables"
