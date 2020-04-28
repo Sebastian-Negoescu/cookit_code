@@ -86,7 +86,7 @@ pexpect==4.7.0
 Pillow==7.0.0
 pluggy==0.13.1
 poyo==0.5.0
-psycopg2==2.8.4
+# psycopg2==2.8.4
 ptyprocess==0.6.0
 py==1.8.0
 pycodestyle==2.5.0
