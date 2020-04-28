@@ -288,4 +288,4 @@ stages:
             WebAppName: "$(VSOPREFIX)"
             deployToSlotOrASE: true
             SlotName: "$(branch)"
-            packageForLinux: "$(Pipeline.Workspace)/Application$(Build.BuildId).zip"
+            packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
