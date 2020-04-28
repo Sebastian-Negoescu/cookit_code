@@ -250,7 +250,7 @@ stages:
                 #############################################################################################################################
                 #################################### CONVERT THE OUTPUTS FROM JSON && EXTRACT THE VALUES ####################################
                 #############################################################################################################################
-                $armOutputs = $(armOutputsJson) | ConvertFrom-JSON
+                $armOutputs = "$(armOutputsJson)" | ConvertFrom-JSON
                 $armOutputsWebAppName = "$($armOutputs.webappNameLinked.value)"
                 Write-Host "Our Web App's name is: $armOutputsWebAppName."
 
