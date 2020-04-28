@@ -235,7 +235,7 @@ stages:
               overrideParameters:
                 -branch "$(branch)"
               deploymentMode: "Incremental"
-              deploymentOutputs: armOutputs
+              deploymentOutputs: armOutputsJson
           - task: AzurePowerShell@5
             name: "Deployment_Outputs"
             inputs:
@@ -244,10 +244,16 @@ stages:
               ScriptType: "InlineScript"
               Inline: |
                 Write-Host "Check if the previous Deployment Outputs Variable was created..."
-                Write-Host "$(armOutputs)"
+                Write-Host "$(armOutputsJson)"
                 Write-Host "Check if it is iin the Environment Variables..."
                 Get-ChildItem env:*
-                
+                #############################################################################################################################
+                #################################### CONVERT THE OUTPUTS FROM JSON && EXTRACT THE VALUES ####################################
+                #############################################################################################################################
+                $armOutputs = $(armOutputsJson) | ConvertFrom-JSON
+                $armOutputsWebAppName = $armOutputs.webappNameLinked.value
+                Write-Host "Our Web App's name is: $armOutputsWebAppName."
+
   - stage: "Deploy_Application"
     displayName: "Deploy Django Application"
     dependsOn:
@@ -268,7 +274,7 @@ stages:
         # Read the variable from the file, then expose it in the job 
         - task: AzurePowerShell@5
           name: "Read_Variables"
-          displayName: "Download the variables from Build"
+          displayName: "Read the variables from Build"
           inputs:
             azureSubscription: $(subscription)
             azurePowerShellVersion: "LatestVersion"
@@ -283,6 +289,8 @@ stages:
               Write-Host "My Resource Group Name to be used: $($env:myRgName)"
               Write-Host "##vso[task.setvariable variable=VSORGNAME;]$($env:myRgName)"
               # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
+              Write-Host "DELETE THIS LINE AFTER TEST; printing envvars..."
+              Get-ChildItem env:*
         - task: DownloadBuildArtifacts@0
           name: "Download_DjangoArtifact"
           displayName: "Download Application Artifact"
