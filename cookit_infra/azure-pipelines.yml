@@ -73,6 +73,7 @@ stages:
           inputs:
             archiveType: "zip"
             rootFolderOrFile: "$(System.DefaultWorkingDirectory)/cookit_proj"
+            includeRootFolder: false
             archiveFile: "$(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip"
             replaceExistingArchive: true
         ### TO DO: Archive Files - Archive Test Results
