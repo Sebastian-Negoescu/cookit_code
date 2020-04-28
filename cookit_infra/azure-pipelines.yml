@@ -235,7 +235,19 @@ stages:
               overrideParameters:
                 -branch "$(branch)"
               deploymentMode: "Incremental"
-
+              deploymentOutputs: armOutputs
+          - task: AzurePowerShell@5
+            name: "Deployment_Outputs"
+            inputs:
+              azureSubscription: "$(subscription)"
+              azurePowerShellVersion: "LatestVersion"
+              ScriptType: "InlineScript"
+              Inline: |
+                Write-Host "Check if the previous Deployment Outputs Variable was created..."
+                Write-Host "$(armOutputs)"
+                Write-Host "Check if it is iin the Environment Variables..."
+                Get-ChildItem env:*
+                
   - stage: "Deploy_Application"
     displayName: "Deploy Django Application"
     dependsOn:
@@ -285,7 +297,7 @@ stages:
             azureSubscription: "$(subscription)"
             appType: WebAppLinux
             ResourceGroupName: $(VSORGNAME)
-            WebAppName: "$(VSOPREFIX)"
+            WebAppName: "$(VSOPREFIX)-webapp"
             deployToSlotOrASE: true
             SlotName: "$(branch)"
             packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
