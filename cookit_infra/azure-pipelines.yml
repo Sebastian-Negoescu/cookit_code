@@ -249,34 +249,22 @@ stages:
             artifactName: "myVarsArtifact"
             source: "current"
             targetPath: "$(Pipeline.Workspace)"
-        # Read the variable from the file, then expose it in the job | CONTINUE TOMORROW IT IS NOT SAVED WELL
-        # - task: AzurePowerShell@5
-        #   name: "Read_Variable"
-        #   inputs:
-        #     azureSubscription: $(subscription)
-        #     azurePowerShellVersion: "LatestVersion"
-        #     ScriptType: "InlineScript"
-        #     Inline: |
-        #       $myPrefix = Get-Content "$(Pipeline.Workspace)/"
-        #       Write-Host "My Prefix to be used: $($myPrefix)"
-        #       # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
-        #   displayName: "Download the variables from Build"
+        # Read the variable from the file, then expose it in the job 
+        - task: AzurePowerShell@5
+          name: "Read_Variable"
+          inputs:
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: "InlineScript"
+            Inline: |
+              $myPrefix = Get-Content "$(Pipeline.Workspace)/myVsoPrefix"
+              $env:myPrefix = $myPrefix
+              Write-Host "My Prefix to be used: $($env:myPrefix)"
+              Write-Host "##vso[task.setvariable variable=VSOPREFIX;]$($env:myPrefix)"
+              # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
+          displayName: "Download the variables from Build"
         # - task: AzureRmWebAppDeployment@4
         #   displayName: "DeployDEV"
         #   inputs:
         #     azureSubscription: "$(subscription)"
         #     WebAppName: 
-
-
-  ###########################################################################################################################
-  ###################### CONTINUE AFTER LUNCH WITH THE CREATION OF THE RESOURCES && DEPLOY TO SLOT ##########################
-  ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
-  ###########################################################################################################################
-
-        
-
-  ###########################################################################################################################
-  ###################### DEPLOY TO SLOT SLOT PART && MAYBE TO MMASTER APP - JUST CHECK POSIBILITIES #########################
-  ###################### AT THE END UN-COMMENT THE CONNECTIVITY AND DEPENDENCY TESTING ######################################
-  ###########################################################################################################################
-
