@@ -321,4 +321,4 @@ stages:
             SlotName: "$(branch)"
             packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
             DeploymentType: "zipDeploy"
-            StartupCommand: post_build.sh
+            # StartupCommand: post_build.sh
