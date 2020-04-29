@@ -64,7 +64,9 @@ stages:
           name: "Install_Dependencies"
           displayName: "Install Dependencies"
           inputs:
-            script: "pip3 install -r cookit_proj/requirements.txt"
+            script: |
+              python3 -m pip install --upgrade pip setuptools wheel django
+              pip3 install -r cookit_proj/requirements.txt
         ### TO DO: CommandLine - pytest: install pytest, run UNIT tests, using --jUnitXML for results
         ### TO DO: Publish Test Artifact - publish test results as JUnit format with file **/test-results.xml
         - task: ArchiveFiles@2
@@ -310,3 +312,4 @@ stages:
             deployToSlotOrASE: true
             SlotName: "$(branch)"
             packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
+            DeploymentType: "zipDeploy"
