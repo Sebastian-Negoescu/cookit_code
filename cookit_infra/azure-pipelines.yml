@@ -302,6 +302,12 @@ stages:
             buildType: "current"
             downloadType: "single"
             downloadPath: $(Pipeline.Workspace)
+        - task: PowerShell@2
+          name: "Ensure_Artifact"
+          inputs:
+            targetType: inline
+            script: |
+              Get-ChildItem -Path $(Pipeline.Workspace) -Recurse
         - task: AzureRmWebAppDeployment@4
           displayName: "DeployDEV"
           inputs:
