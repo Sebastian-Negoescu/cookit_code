@@ -26,7 +26,13 @@
                 "name": "[variables('webappName')]",
                 "siteConfig": {
                     "linuxFxVersion": "PYTHON|3.8",
-                    "alwaysOn": true
+                    "alwaysOn": true,
+                    "appSettings": [
+                        {
+                            "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+                            "value": "true"
+                        }
+                    ]
                 },
                 "clientAffinityEnabled": false,
                 "serverFarmId": "[parameters('aspRef')]"
