@@ -64,11 +64,12 @@ stages:
           name: "Install_Dependencies"
           displayName: "Install Dependencies"
           inputs:
+            workingDirectory: "$(System.DefaultWorkingDirectory)/cookit_proj"
             script: |
               python3 -m venv venv
               source venv/bin/activate
               python3 -m pip install --upgrade pip setuptools wheel django gunicorn
-              pip3 install -r cookit_proj/requirements.txt
+              pip3 install -r requirements.txt
         ### TO DO: CommandLine - pytest: install pytest, run UNIT tests, using --jUnitXML for results
         ### TO DO: Publish Test Artifact - publish test results as JUnit format with file **/test-results.xml
         - task: ArchiveFiles@2
@@ -259,66 +260,65 @@ stages:
                 $armOutputsWebAppName = "$($armOutputs.webappNameLinked.value)"
                 Write-Host "Our Web App's name is: $armOutputsWebAppName."
 
-  # - stage: "Deploy_Application"
-  #   displayName: "Deploy Django Application"
-  #   dependsOn:
-  #     - "Build_App"
-  #     - "Create_Infrastructure"
-  #   condition: succeeded()
-  #   pool: "Default"
-  #   jobs:
-  #     - job: "Deploy_App_Dev"
-  #       displayName: "Deploy Django to DEV"
-  #       steps:
-  #       - task: DownloadPipelineArtifact@2
-  #         name: "Download_myVarsArtifact"
-  #         inputs:
-  #           artifactName: "myVarsArtifact"
-  #           source: "current"
-  #           targetPath: "$(Pipeline.Workspace)"
-  #       # Read the variable from the file, then expose it in the job 
-  #       - task: AzurePowerShell@5
-  #         name: "Read_Variables"
-  #         displayName: "Read the variables from Build"
-  #         inputs:
-  #           azureSubscription: $(subscription)
-  #           azurePowerShellVersion: "LatestVersion"
-  #           ScriptType: "InlineScript"
-  #           Inline: |
-  #             $myPrefix = Get-Content "$(Pipeline.Workspace)/myVsoPrefix"
-  #             $env:myPrefix = $myPrefix
-  #             Write-Host "My Prefix to be used: $($env:myPrefix)"
-  #             Write-Host "##vso[task.setvariable variable=VSOPREFIX;]$($env:myPrefix)"
-  #             $myRgName = Get-Content "$(Pipeline.Workspace)/myVsoRgName"
-  #             $env:myRgName = $myRgName
-  #             Write-Host "My Resource Group Name to be used: $($env:myRgName)"
-  #             Write-Host "##vso[task.setvariable variable=VSORGNAME;]$($env:myRgName)"
-  #             # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
-  #             Write-Host "DELETE THIS LINE AFTER TEST; printing envvars..."
-  #             Get-ChildItem env:*
-  #       - task: DownloadBuildArtifacts@0
-  #         name: "Download_DjangoArtifact"
-  #         displayName: "Download Application Artifact"
-  #         inputs:
-  #           artifactName: "CookIT"
-  #           buildType: "current"
-  #           downloadType: "single"
-  #           downloadPath: $(Pipeline.Workspace)
-  #       - task: PowerShell@2
-  #         name: "Ensure_Artifact"
-  #         inputs:
-  #           targetType: inline
-  #           script: |
-  #             Get-ChildItem -Path $(Pipeline.Workspace) -Recurse
-  #       - task: AzureRmWebAppDeployment@4
-  #         displayName: "DeployDEV"
-  #         inputs:
-  #           azureSubscription: "$(subscription)"
-  #           appType: WebAppLinux
-  #           ResourceGroupName: $(VSORGNAME)
-  #           WebAppName: "$(VSOPREFIX)-webapp"
-  #           deployToSlotOrASE: true
-  #           SlotName: "$(branch)"
-  #           packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
-  #           DeploymentType: "zipDeploy"
-
+  - stage: "Deploy_Application"
+    displayName: "Deploy Django Application"
+    dependsOn:
+      - "Build_App"
+      - "Create_Infrastructure"
+    condition: succeeded()
+    pool: "Default"
+    jobs:
+      - job: "Deploy_App_Dev"
+        displayName: "Deploy Django to DEV"
+        steps:
+        - task: DownloadPipelineArtifact@2
+          name: "Download_myVarsArtifact"
+          inputs:
+            artifactName: "myVarsArtifact"
+            source: "current"
+            targetPath: "$(Pipeline.Workspace)"
+        # Read the variable from the file, then expose it in the job 
+        - task: AzurePowerShell@5
+          name: "Read_Variables"
+          displayName: "Read the variables from Build"
+          inputs:
+            azureSubscription: $(subscription)
+            azurePowerShellVersion: "LatestVersion"
+            ScriptType: "InlineScript"
+            Inline: |
+              $myPrefix = Get-Content "$(Pipeline.Workspace)/myVsoPrefix"
+              $env:myPrefix = $myPrefix
+              Write-Host "My Prefix to be used: $($env:myPrefix)"
+              Write-Host "##vso[task.setvariable variable=VSOPREFIX;]$($env:myPrefix)"
+              $myRgName = Get-Content "$(Pipeline.Workspace)/myVsoRgName"
+              $env:myRgName = $myRgName
+              Write-Host "My Resource Group Name to be used: $($env:myRgName)"
+              Write-Host "##vso[task.setvariable variable=VSORGNAME;]$($env:myRgName)"
+              # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
+              Write-Host "DELETE THIS LINE AFTER TEST; printing envvars..."
+              Get-ChildItem env:*
+        - task: DownloadBuildArtifacts@0
+          name: "Download_DjangoArtifact"
+          displayName: "Download Application Artifact"
+          inputs:
+            artifactName: "CookIT"
+            buildType: "current"
+            downloadType: "single"
+            downloadPath: $(Pipeline.Workspace)
+        - task: PowerShell@2
+          name: "Ensure_Artifact"
+          inputs:
+            targetType: inline
+            script: |
+              Get-ChildItem -Path $(Pipeline.Workspace) -Recurse
+        - task: AzureRmWebAppDeployment@4
+          displayName: "DeployDEV"
+          inputs:
+            azureSubscription: "$(subscription)"
+            appType: WebAppLinux
+            ResourceGroupName: $(VSORGNAME)
+            WebAppName: "$(VSOPREFIX)-webapp"
+            deployToSlotOrASE: true
+            SlotName: "$(branch)"
+            packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
+            DeploymentType: "zipDeploy"
