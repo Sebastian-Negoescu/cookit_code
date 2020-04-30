@@ -320,4 +320,4 @@ stages:
             SlotName: "$(branch)"
             packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
             DeploymentType: "zipDeploy"
-            StartupCommand: "gunicorn --bind=0.0.0.0:8000 --chdir=/home/site/wwwroot cookit.wsgi"
+            StartupCommand: "post_build.sh"
