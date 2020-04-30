@@ -84,7 +84,7 @@
             "type": "Microsoft.DBforPostgreSQL/servers",
             "apiVersion": "2017-12-01",
             "name": "[variables('serverName')]",
-            "location": "[parameters('location')]",
+            "location": "East US",
             "sku": {
                 "name": "[parameters('skuName')]",
                 "capacity": "[parameters('skuCapacity')]",
@@ -104,7 +104,7 @@
                     "type": "firewallRules",
                     "apiVersion": "2017-12-01",
                     "name": "[concat(variables('serverName'), 'firewall')]",
-                    "location": "[parameters('location')]",
+                    "location": "East US",
                     "properties": {
                         "startIpAddress": "0.0.0.0",
                         "endIpAddress": "255.255.255.255"
