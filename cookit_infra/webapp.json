@@ -53,7 +53,7 @@
                         },
                         {
                             "name": "DBUSER",
-                            "value": "[concat(parameters('dbName'), '@', parameters('psqlServerName'))]"
+                            "value": "[concat(parameters('dbUser'), '@', parameters('psqlServerName'))]"
                         },
                         {
                             "name": "DBPASS",
