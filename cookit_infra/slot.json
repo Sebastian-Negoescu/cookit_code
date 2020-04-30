@@ -68,7 +68,7 @@
                         },
                         {
                             "name": "DJANGO_ENV",
-                            "value": "production"
+                            "value": "dev"
                         }
                     ]
                 },
