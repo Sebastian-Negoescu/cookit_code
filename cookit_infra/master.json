@@ -19,11 +19,13 @@
         }
     },
     "variables": {
+        "kvId": "/subscriptions/ac658ff9-95d0-4719-9f1f-58c5554960c9/resourceGroups/sebinegovw_rg/providers/Microsoft.KeyVault/vaults/sebinegovw-keyvault",
         "repoUrl": "https://raw.githubusercontent.com/Sebastian-Negoescu/cookit_code/",
         "baseUrl": "[concat(variables('repoUrl'), parameters('branch'), '/cookit_infra/')]",
         "aspFile": "asp.json",
         "webappFile": "webapp.json",
-        "slotFile": "slot.json"
+        "slotFile": "slot.json",
+        "psqlFile": "psql.json"
     },
     "resources": [
         {
@@ -69,7 +71,8 @@
                 }
             },
             "dependsOn": [
-                "Linked_ASP"
+                "Linked_ASP",
+                "Linked_PSQL"
             ]
         },
         {
@@ -100,6 +103,37 @@
             "dependsOn": [
                 "Linked_WebApp"
             ]
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "name": "Linked_PSQL",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('baseUrl'), variables('psqlFile'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "prefix": {
+                        "value": "[parameters('prefix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "adminUsername": {
+                        "value": "sebinegoescu"
+                    },
+                    "adminPassword": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('kvId')]"
+                            },
+                            "secretName": "adminpwd"
+                        }
+                    }
+                }
+            }
         }
     ],
     "outputs": {
@@ -126,6 +160,22 @@
         "slotLinkedHostName": {
             "type": "string",
             "value": "[reference('Linked_Slot').outputs.slotHostName.value]"
+        },
+        "psqlLinked": {
+            "type": "string",
+            "value": "[reference('Linked_PSQL').outputs.psqlServerId.value]"
+        },
+        "psqlLinkedHostName": {
+            "type": "string",
+            "value": "[reference('Linked_PSQL').outputs.psqlServerHostName.value]"
+        },
+        "psqlLinkedAdmin": {
+            "type": "string",
+            "value": "[reference('Linked_PSQL').outputs.psqlServerAdmin.value]"
+        },
+        "psqlLinkedDbName": {
+            "type": "string",
+            "value": "[reference('Linked_PSQL').outputs.psqlDbName.value]"
         }
     }
 }

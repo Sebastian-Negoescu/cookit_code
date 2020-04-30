@@ -1,0 +1,148 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "prefix": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "string"
+        },
+        "skuCapacity": {
+            "type": "int",
+            "defaultValue": 2,
+            "allowedValues": [
+                2,
+                4,
+                8,
+                16,
+                32
+            ]
+        },
+        "skuName": {
+            "type": "string",
+            "defaultValue": "GP_Gen5_2",
+            "allowedValues": [
+                "GP_Gen5_2",
+                "GP_Gen5_4",
+                "GP_Gen5_8",
+                "GP_Gen5_16",
+                "GP_Gen5_32",
+                "MO_Gen5_2",
+                "MO_Gen5_4",
+                "MO_Gen5_8",
+                "MO_Gen5_16",
+                "MO_Gen5_32",
+                "B_Gen5_1",
+                "B_Gen5_2"
+            ]
+        },
+        "skuFamily": {
+            "type": "string",
+            "defaultValue": "Gen5"
+        },
+        "skuSizeMb": {
+            "type": "int",
+            "defaultValue": 51200,
+            "allowedValues": [
+                51200,
+                102400
+            ]
+        },
+        "skuTier": {
+            "type": "string",
+            "defaultValue": "GeneralPurpose",
+            "allowedValues": [
+                "GeneralPurpose",
+                "MemoryOptimized",
+                "Basic"
+            ]
+        },
+        "psqlVersion": {
+            "type": "string",
+            "defaultValue": "10.10",
+            "allowedValues": [
+                "9.5",
+                "9.6",
+                "10.10",
+                "11.5"
+            ]
+        }
+    },
+    "variables": {
+        "serverName": "[concat(parameters('prefix'), '-psqlserver')]",
+        "dbName": "[concat(parameters('prefix'), '-db')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DBforPostgreSQL/servers",
+            "apiVersion": "2017-12-01",
+            "name": "[variables('serverName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('skuName')]",
+                "capacity": "[parameters('skuCapacity')]",
+                "family": "[parameters('skuFamily')]",
+                "tier": "[parameters('skuTier')]",
+                "size": "[parameters('skuSizeMb')]"
+            },
+            "properties": {
+                "version": "[parameters('psqlVersion')]",
+                "administratorLogin": "[parameters('adminUsername')]",
+                "administratorLoginPassword": "[parameters('adminPassword')]",
+                "storageMB": "[parameters('skuSizeMb')]",
+                "sslEnforcement": "Enabled"
+            },
+            "resources": [
+                {
+                    "type": "firewallRules",
+                    "apiVersion": "2017-12-01",
+                    "name": "[concat(variables('serverName'), 'firewall')]",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]"
+                    ]
+                },
+                {
+                    "type": "databases",
+                    "apiVersion": "2017-12-01",
+                    "name": "[variables('dbName')]",
+                    "properties": {
+                        "charset": "utf-8"
+                    },
+                    "dependsOn": [
+                        "[concat('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]"
+                    ]
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "psqlServerId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]"
+        },
+        "psqlServerHostName": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))).fullyQualifiedDomainName]"
+        },
+        "psqlServerAdmin": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))).administratorLogin]"
+        },
+        "psqlDbName": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers/databases', variables('serverName'), variables('dbName'))).name]"
+        }
+    }
+}
