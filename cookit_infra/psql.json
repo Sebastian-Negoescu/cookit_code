@@ -141,7 +141,7 @@
         },
         "psqlDbName": {
             "type": "string",
-            "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers/databases', variables('serverName'), variables('dbName'))).Name]"
+            "value": "[variables('dbName')]"
         }
     }
 }
