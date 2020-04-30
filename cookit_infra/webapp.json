@@ -10,6 +10,18 @@
         },
         "aspRef": {
             "type": "string"
+        },
+        "psqlHost": {
+            "type": "string"
+        },
+        "dbName": {
+            "type": "string"
+        },
+        "dbUser": {
+            "type": "string"
+        },
+        "dbPass": {
+            "type": "string"
         }
     },
     "variables": {
@@ -31,6 +43,22 @@
                         {
                             "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
                             "value": "true"
+                        },
+                        {
+                            "name": "DBHOST",
+                            "value": "[parameters('psqlHost')]"
+                        },
+                        {
+                            "name": "DBUSER",
+                            "value": "[parameters('dbUser')]"
+                        },
+                        {
+                            "name": "DBPASS",
+                            "value": "[parameters('dbPass')]"
+                        },
+                        {
+                            "name": "DBNAME",
+                            "value": "[parameters('dbName')]"
                         }
                     ]
                 },

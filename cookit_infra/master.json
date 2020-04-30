@@ -67,6 +67,23 @@
                     },
                     "aspRef": {
                         "value": "[reference('Linked_ASP').outputs.aspId.value]"
+                    },
+                    "psqlHost": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlServerHostName.value]"
+                    },
+                    "dbName": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlDbName.value]"
+                    },
+                    "dbUser": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlServerAdmin.value]"
+                    },
+                    "dbPass": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('kvId')]"
+                            },
+                            "secretName": "adminpwd"
+                        }
                     }
                 }
             },
@@ -97,6 +114,23 @@
                     },
                     "aspRef": {
                         "value": "[reference('Linked_ASP').outputs.aspId.value]"
+                    },
+                    "psqlHost": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlServerHostName.value]"
+                    },
+                    "dbName": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlDbName.value]"
+                    },
+                    "dbUser": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlServerAdmin.value]"
+                    },
+                    "dbPass": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[variables('kvId')]"
+                            },
+                            "secretName": "adminpwd"
+                        }
                     }
                 }
             },
