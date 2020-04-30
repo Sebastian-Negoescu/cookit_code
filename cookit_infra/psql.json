@@ -66,7 +66,7 @@
         },
         "psqlVersion": {
             "type": "string",
-            "defaultValue": "10",
+            "defaultValue": "9.6",
             "allowedValues": [
                 "9.5",
                 "9.6",
@@ -93,7 +93,7 @@
                 "size": "[parameters('skuSizeMb')]"
             },
             "properties": {
-                "version": "10",
+                "version": "[parameters('psqlVersion')]",
                 "administratorLogin": "[parameters('adminUsername')]",
                 "administratorLoginPassword": "[parameters('adminPassword')]",
                 "storageMB": "[parameters('skuSizeMb')]",
