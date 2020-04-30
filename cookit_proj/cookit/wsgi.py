@@ -11,6 +11,12 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit_proj.settings')
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit_proj.settings')
+
+if os.environ.get('DJANGO_ENV') == 'production':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit.production')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit.settings')
+
 
 application = get_wsgi_application()

@@ -22,6 +22,9 @@
         },
         "dbPass": {
             "type": "string"
+        },
+        "psqlServerName": {
+            "type": "string"
         }
     },
     "variables": {
@@ -50,7 +53,7 @@
                         },
                         {
                             "name": "DBUSER",
-                            "value": "[parameters('dbUser')]"
+                            "value": "[concat(parameters('dbName'), '@', parameters('psqlServerName'))]"
                         },
                         {
                             "name": "DBPASS",
@@ -59,6 +62,10 @@
                         {
                             "name": "DBNAME",
                             "value": "[parameters('dbName')]"
+                        },
+                        {
+                            "name": "DJANGO_ENV",
+                            "value": "production"
                         }
                     ]
                 },

@@ -131,6 +131,10 @@
             "type": "string",
             "value": "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]"
         },
+        "psqlServerName": {
+            "type": "string",
+            "value": "[variables('serverName')]"
+        },
         "psqlServerHostName": {
             "type": "string",
             "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))).fullyQualifiedDomainName]"

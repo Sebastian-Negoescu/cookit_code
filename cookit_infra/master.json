@@ -71,6 +71,9 @@
                     "psqlHost": {
                         "value": "[reference('Linked_PSQL').outputs.psqlServerHostName.value]"
                     },
+                    "psqlServerName": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlServerName.value]"
+                    },
                     "dbName": {
                         "value": "[reference('Linked_PSQL').outputs.psqlDbName.value]"
                     },
@@ -117,6 +120,9 @@
                     },
                     "psqlHost": {
                         "value": "[reference('Linked_PSQL').outputs.psqlServerHostName.value]"
+                    },
+                    "psqlServerName": {
+                        "value": "[reference('Linked_PSQL').outputs.psqlServerName.value]"
                     },
                     "dbName": {
                         "value": "[reference('Linked_PSQL').outputs.psqlDbName.value]"
@@ -198,6 +204,10 @@
         "psqlLinked": {
             "type": "string",
             "value": "[reference('Linked_PSQL').outputs.psqlServerId.value]"
+        },
+        "psqlLinkedServerName": {
+            "type": "string",
+            "value": "[reference('Linked_PSQL').outputs.psqlServerName.value]"
         },
         "psqlLinkedHostName": {
             "type": "string",
