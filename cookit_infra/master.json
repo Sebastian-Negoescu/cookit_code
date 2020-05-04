@@ -4,7 +4,7 @@
     "parameters": {
         "prefix": {
             "type": "string",
-            "defaultValue": "cookit"
+            "defaultValue": "sncookit"
         },
         "location": {
             "type": "string",
