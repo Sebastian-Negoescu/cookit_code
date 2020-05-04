@@ -1,5 +1,26 @@
-# trigger:
-#   - master
+trigger:
+  - master
 
+variables:
+  subscription: "http://AzDevOps"
+
+pool: "Default"
+resources:
+  pipelines:
+    - pipeline: "CookIT_Pipeline_DEV"
+      source: "Sebastian-Negoescu.cookit_code_DEV"
 # stages:
-#   - stage: "Download Artifacts"
+#   - stage: "Deploy_PROD"
+#     displayName: "Deploy Resources to PROD"
+#     condition: "and(succeeded(), eq(variables['Build.BuildReason'], 'PullRequest'))"
+#     pool: "Default"
+
+steps:
+  - download: "CookIT_Pipeline_DEV"
+  - task: AzurePowerShell@5
+    name: "List_Artifacts"
+    inputs:
+      azureSubscription: "$(subscription)"
+      ScriptType: "InlineScript"
+      Inline: |
+        Get-ChildItem $(Pipeline.Workspace) -Recurse
