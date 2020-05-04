@@ -105,8 +105,6 @@ stages:
             script: |
               $env:masterFile = (Get-ChildItem -Recurse -Filter "master.json" | Select-Object FullName).FullName
               Write-Host "Found Master File at: $($env:masterFile)." -ForegroundColor DarkYellow
-              # Write-Host "Initial Read of the file:" -ForegroundColor DarkBlue # TO DELETE
-              # Get-Content -Path $($env:masterFile) # TO DELETE
               $env:masterContent = Get-Content -Path $($env:masterFile) -Raw
               Write-Host "Print the content of the Master File for double-checking purposes..."
               $($env:masterContent)
@@ -293,8 +291,6 @@ stages:
               Write-Host "My Resource Group Name to be used: $($env:myRgName)"
               Write-Host "##vso[task.setvariable variable=VSORGNAME;]$($env:myRgName)"
               # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
-              Write-Host "DELETE THIS LINE AFTER TEST; printing envvars..."
-              Get-ChildItem env:*
         - task: DownloadBuildArtifacts@0
           name: "Download_DjangoArtifact"
           displayName: "Download Application Artifact"
@@ -310,6 +306,7 @@ stages:
             script: |
               Get-ChildItem -Path $(Pipeline.Workspace) -Recurse
         - task: AzureRmWebAppDeployment@4
+          name: "deployDev"
           displayName: "DeployDEV"
           inputs:
             azureSubscription: "$(subscription)"
