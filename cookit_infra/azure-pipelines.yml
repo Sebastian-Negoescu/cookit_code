@@ -87,7 +87,6 @@ stages:
             PathtoPublish: "$(Build.ArtifactStagingDirectory)"
             ArtifactName: "CookIT"
             publishLocation: "Container"
-### JUST IN GIT LOCAL
 
   - stage: "Create_Infrastructure"
     dependsOn: "Test_Agent_Connectivity"
