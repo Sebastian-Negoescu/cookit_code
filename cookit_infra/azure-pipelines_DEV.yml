@@ -188,7 +188,6 @@ stages:
                 Get-Content $(Pipeline.Workspace)/variables/myVsoRgName
                 ### Set variable for Artifact name
                 $artifactAppName = "Application" + "$env:BUILD_BUILDID" + ".zip"
-                Write-Host "Artifact name set to: $($artifactAppName)"
                 $artifactAppName > "$(Pipeline.Workspace)/variables/myAppArtifactName"
                 Write-Host "Verify if the value of the App Artifact name is written..."
                 Get-Content $(Pipeline.Workspace)/variables/myAppArtifactName
@@ -298,7 +297,7 @@ stages:
               $myAppArtifactName = Get-Content "$(Pipeline.Workspace)/myAppArtifactName"
               $env:myAppArtifactName = $myAppArtifactName
               Write-Host "My App Artifact Name to be used: $($env:myAppArtifactName)"
-              Write-Host "##vso[task.setvariables variable=APPARTIFACTNAME;]$env:myAppArtifactName"
+              Write-Host "##vso[task.setvariable variable=VSOAPPARTIFACTNAME;]$env:myAppArtifactName"
         - task: DownloadPipelineArtifact@2
           name: "Download_DjangoArtifact"
           displayName: "Download Application Artifact"
@@ -323,6 +322,6 @@ stages:
             WebAppName: "$(VSOPREFIX)-webapp"
             deployToSlotOrASE: true
             SlotName: "$(branch)"
-            packageForLinux: "$(Pipeline.Workspace)/$(APPARTIFACTNAME)"
+            packageForLinux: "$(Pipeline.Workspace)/$(VSOAPPARTIFACTNAME)"
             DeploymentType: "zipDeploy"
             StartupCommand: "post_build.sh"
