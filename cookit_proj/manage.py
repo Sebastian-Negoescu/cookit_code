@@ -8,6 +8,8 @@ def main():
     # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit.settings')
     if os.environ.get('DJANGO_ENV') == 'production':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit.production')
+    elif os.environ.get('DJANGO_ENV') == 'dev':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit.dev')
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cookit.settings')
     try:
