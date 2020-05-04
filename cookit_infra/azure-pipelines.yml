@@ -1,0 +1,5 @@
+# trigger:
+#   - master
+
+# stages:
+#   - stage: "Download Artifacts"
