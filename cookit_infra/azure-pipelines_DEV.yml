@@ -77,16 +77,15 @@ stages:
             archiveType: "zip"
             rootFolderOrFile: "$(System.DefaultWorkingDirectory)/cookit_proj"
             includeRootFolder: false
-            archiveFile: "$(Build.ArtifactStagingDirectory)/Application$(Build.BuildId).zip"
+            archiveFile: "$(Pipeline.Workspace)/Application$(Build.BuildId).zip"
             replaceExistingArchive: true
         ### TO DO: Archive Files - Archive Test Results
-        - task: PublishBuildArtifacts@1
+        - task: PublishPipelineArtifact@1
           name: "Publish_App"
           displayName: "Publish App Artifact"
           inputs:
-            PathtoPublish: "$(Build.ArtifactStagingDirectory)"
-            ArtifactName: "CookIT"
-            publishLocation: "Container"
+            artifact: "CookIT"
+            targetPath: "$(Pipeline.Workspace)/Application$(Build.BuildId).zip"           
 
   - stage: "Create_Infrastructure"
     dependsOn: "Test_Agent_Connectivity"
@@ -187,6 +186,11 @@ stages:
                 $env:MYVSORGNAME > "$(Pipeline.Workspace)/variables/myVsoRgName"
                 Write-Host "Verify if the Value of the RGName variable is written..."
                 Get-Content $(Pipeline.Workspace)/variables/myVsoRgName
+                ### Set variable for Artifact name
+                $artifactAppName = "Application" + "$env:BUILD_BUILDID" + ".zip"
+                $artifactAppName > "$(Pipeline.Workspace)/variables/myAppArtifactName"
+                Write-Host "Verify if the value of the App Artifact name is written..."
+                Get-Content $(Pipeline.Workspace)/variables/myAppArtifactName
           - task: PublishPipelineArtifact@1
             name: "Publish_Variables"
             displayName: "Publish Variables as Artifact"
@@ -290,8 +294,11 @@ stages:
               $env:myRgName = $myRgName
               Write-Host "My Resource Group Name to be used: $($env:myRgName)"
               Write-Host "##vso[task.setvariable variable=VSORGNAME;]$($env:myRgName)"
-              # https://medium.com/microsoftazure/how-to-pass-variables-in-azure-pipelines-yaml-tasks-5c81c5d31763
-        - task: DownloadBuildArtifacts@0
+              $myAppArtifactName = Get-Content "$(Pipeline.Workspace)/myAppArtifactName"
+              $env:myAppArtifactName = $myAppArtifactName
+              Write-Host "My App Artifact Name to be used: $($env:myAppArtifactName)"
+              Write-Host "##vso[task.setvariable variable=VSOAPPARTIFACTNAME;]$env:myAppArtifactName"
+        - task: DownloadPipelineArtifact@2
           name: "Download_DjangoArtifact"
           displayName: "Download Application Artifact"
           inputs:
@@ -315,6 +322,6 @@ stages:
             WebAppName: "$(VSOPREFIX)-webapp"
             deployToSlotOrASE: true
             SlotName: "$(branch)"
-            packageForLinux: "$(Pipeline.Workspace)/CookIT/Application$(Build.BuildId).zip"
+            packageForLinux: "$(Pipeline.Workspace)/$(VSOAPPARTIFACTNAME)"
             DeploymentType: "zipDeploy"
             StartupCommand: "post_build.sh"
