@@ -21,6 +21,7 @@ steps:
     name: "List_Artifacts"
     inputs:
       azureSubscription: "$(subscription)"
+      azurePowerShellVersion: "LatestVersion"
       ScriptType: "InlineScript"
       Inline: |
         Get-ChildItem $(Pipeline.Workspace) -Recurse
