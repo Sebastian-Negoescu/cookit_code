@@ -61,4 +61,4 @@ steps:
       ResourceGroupName: "$(MYVSORGNAME)"
       WebAppName: "$(MYVSOPREFIX)-webapp"
       packageForLinux: "$(Pipeline.Workspace)/$(pipelineArtifact)/CookIT/$(MYVSOAPPARTIFACTNAME)"
-      StartupCommand: "post_build.sh"
+      StartupCommand: "gunicorn --workers 8 --threads 4 --bind=0.0.0.0:8000 --chdir=/home/site/wwwroot cookit.wsgi"
