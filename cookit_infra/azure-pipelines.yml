@@ -61,3 +61,4 @@ steps:
       ResourceGroupName: "$(MYVSORGNAME)"
       WebAppName: "$(MYVSOPREFIX)-webapp"
       packageForLinux: "$(Pipeline.Workspace)/$(pipelineArtifact)/CookIT/$(MYVSOAPPARTIFACTNAME)"
+      StartupCommand: "post_build.sh"
