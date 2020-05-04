@@ -1,8 +1,12 @@
 trigger:
   - master
 
+pr:
+  - master
+
 variables:
   subscription: "http://AzDevOps"
+  pipelineArtifact: "CookIT_Pipeline_DEV"
 
 pool: "Default"
 resources:
@@ -15,13 +19,45 @@ resources:
 #     condition: "and(succeeded(), eq(variables['Build.BuildReason'], 'PullRequest'))"
 #     pool: "Default"
 
+name: "Deploy_PROD"
+workspace:
+  clean: all
 steps:
   - download: "CookIT_Pipeline_DEV"
   - task: AzurePowerShell@5
-    name: "List_Artifacts"
+    name: "Ensure_Artifacts"
     inputs:
       azureSubscription: "$(subscription)"
       azurePowerShellVersion: "LatestVersion"
       ScriptType: "InlineScript"
       Inline: |
         Get-ChildItem $(Pipeline.Workspace) -Recurse
+  - task: AzurePowerShell@5
+    name: "Read_Variables"
+    inputs:
+      azureSubscription: "$(subscription)"
+      azurePowerShellVersion: "LatestVersion"
+      ScriptType: "InlineScript"
+      Inline: |
+        $varsPath = "$(Pipeline.Workspace)/$(pipelineArtifact)/myVarsArtifact"
+        $myPrefix = Get-Content -Path "$varsPath/myVsoPrefix"
+        $myRgName = Get-Content -Path "$varsPath/myVsoRgName"
+        $myAppArtifactName = Get-Content -Path "$varsPath/myAppArtifactName"
+        $env:myPrefix = $myPrefix
+        Write-Host "My Prefix to be used: $($env:myPrefix)"
+        $env:myRgName = $myRgName
+        Write-Host "My Resource Group Name to be used: $($env:myRgName)"
+        $env:myAppArtifactName = $myAppArtifactName
+        Write-Host "My App Artifact Name to be used: $($env:myAppArtifactName)"
+        Write-Host "##vso[task.setvariable variable=MYVSOPREFIX;]$env:myPrefix"
+        Write-Host "##vso[task.setvariable variable=MYVSORGNAME;]$env:myRgName"
+        Write-Host "##vso[task.setvariable variable=MYVSOAPPARTIFACTNAME;]$env:myAppArtifactName"
+  - task: AzureRmWebAppDeployment@4
+    name: "Deploy_Prod"
+    inputs:
+      azureSubscription: "$(subscription)"
+      appType: webAppLinux
+      DeploymentType: zipDeploy
+      ResourceGroupName: "$(MYVSORGNAME)"
+      WebAppName: "$(MYVSOPREFIX)-webapp"
+      packageForLinux: "$(Pipeline.Workspace)/$(pipelineArtifact)/CookIT/$(MYVSOAPPARTIFACTNAME)"
