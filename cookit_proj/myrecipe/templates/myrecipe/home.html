@@ -1,12 +1,48 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{{ block.super }} - Home {% endblock %}
 {% block content %}
-<h3>Toate Retetele</h3>
+<!-- <h3>Toate Retetele</h3>
 <ul>
     {% for recipe in recipes %}
     <li>
         <a href="/myrecipe/{{ recipe.slug }}/">{{ recipe.title }}</a>
     </li>
     {% endfor %}
-</ul>
+</ul> -->
+<main role="main">
+    <section class="jumbotron text-center" style="background-image: url(/static/myrecipe/images/cooking_background.jpg);">
+        <div class="container">
+            <h1 class="jumbotron-heading" style="font-style: italic; color:white">Salutare!</h1>
+            <h3>Deployed with Azure DevOps</h3>
+            <p class="lead text-muted">Welcome to my profile - I'm Sebi. I am passionate about programming and DEVelopment in general, while also having a sweet tooth for the OPerationS part of the scheme. Skeptical-ish...? No need to take my word for it, check it for yourself below! :)</p>
+            <p class="lead text-muted" style="font-style:italic; font-size: 15px;">The Web App is currently running under development...</p>
+            <p>
+                <a href="https://linkedin.com/in/SebastianNegoescu" class="btn btn-primary my-1" target="_blank">LinkedIN</a>
+                <a href="mailto:sebastian.negoescu@gmail.com" class="btn btn-primary my-2">Email Me</a>
+        </div>
+    </section>
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                {% for recipe in recipes %}
+                <div class="col-md-4">
+                    <a href="/myrecipe/{{ recipe.slug }}/">
+                        <div class="card mb-4 box-shadow">
+                            <h5>{{ recipe.title }}</h5>
+                            <p>{{ recipe.number_of_portions }} portii</p>
+                            <img class="card-img-top" src="{{ recipe.photo.url }}" height="160" width="90">
+                            <div class="card-body">
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
 {% endblock %}

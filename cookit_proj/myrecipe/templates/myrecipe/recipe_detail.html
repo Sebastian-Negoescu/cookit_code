@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}{{ block.super }} - {{ recipe.title }}{% endblock %}
 {% block content %}
 <h3>{{ recipe.title }} <span style="font-style: italic; font-weight: lighter; font-size:small">by {{ recipe.author|upper }}</span></h3> 

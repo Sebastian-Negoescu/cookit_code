@@ -44,6 +44,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(User, verbose_name="Author", on_delete=models.CASCADE) # Import User from django.contrib.auth.models before using it.
     date_created = models.DateTimeField(editable=False)
     date_updated = models.DateTimeField(editable=False)
+    photo = models.ImageField(upload_to='media/', null=True, blank=False, default='/media/unavailable.jpg')
 
     class Meta:
         verbose_name = "Recipe"

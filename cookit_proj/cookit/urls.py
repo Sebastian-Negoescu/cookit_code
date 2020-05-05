@@ -25,3 +25,6 @@ urlpatterns = [
     url(r'^$', views.home),
     url(r'^myrecipe/(?P<slug>[-\w]+)/$', views.recipe_detail),
 ]
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

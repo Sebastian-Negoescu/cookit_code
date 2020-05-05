@@ -14,7 +14,6 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -118,14 +117,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
-SITE_STATIC_ROOT = os.path.join(BASE_DIR, "local_static")
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+SITE_STATIC_ROOT = os.path.join(BASE_DIR, 'local_static')
 
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Don't forget to use absolute paths, not relative paths
-    ("", SITE_STATIC_ROOT)
+    ("", SITE_STATIC_ROOT),
 )
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
