@@ -1,3 +1,4 @@
+#!/bin/bash
 cd /home/site/wwwroot
 source /antenv/bin/activate
 python3 -m pip install --upgrade -r requirements.txt
